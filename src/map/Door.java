@@ -1,14 +1,6 @@
 package map;
-import effects.*;
-import entities.*;
-import perks.*;
-import weapons.*;
-import menu.*;
-import game.*;
-import java.util.*;
-import map.*;
-import utils.*;
 
+import java.util.*;
 
 import Tree.BinaryTreeNode;
 
@@ -22,7 +14,8 @@ import java.awt.Rectangle;
  */
 
 /**
- * Puerta dentro de una sala que lleva a otra sala (otro nodo) o representa la salida (isWin).
+ * Puerta dentro de una sala que lleva a otra sala (otro nodo) o representa la
+ * salida (isWin).
  */
 public class Door {
     public final Rectangle area;

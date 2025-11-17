@@ -17,11 +17,12 @@ public class VictoryPanel extends JPanel {
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottom.setOpaque(false);
         JButton menu = new JButton("Volver al menú");
-        menu.addActionListener(_ -> {
-            if (onBackToMenu != null) onBackToMenu.run();
+        menu.addActionListener(e -> {
+            if (onBackToMenu != null)
+                onBackToMenu.run();
         });
         JButton exit = new JButton("Salir");
-        exit.addActionListener(_ -> System.exit(0));
+        exit.addActionListener(e -> System.exit(0));
         bottom.add(menu);
         bottom.add(exit);
         add(bottom, BorderLayout.SOUTH);

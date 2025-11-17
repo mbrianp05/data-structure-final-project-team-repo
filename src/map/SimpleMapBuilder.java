@@ -3,16 +3,6 @@ package map;
 import Tree.BinaryTree;
 import Tree.BinaryTreeNode;
 import Tree.TreeNode;
-import effects.*;
-import entities.*;
-import perks.*;
-import weapons.*;
-import menu.*;
-import game.*;
-import java.util.*;
-import map.*;
-import utils.*;
-
 
 public class SimpleMapBuilder {
 
@@ -48,7 +38,8 @@ public class SimpleMapBuilder {
                 node.setRight(nodes[rightIdx]);
         }
         BinaryTree<MineRoom> map = new BinaryTree<>(nodes[1]);
-        // crear puertas padre<->hijo: en child una única puerta superior hacia el padre,
+        // crear puertas padre<->hijo: en child una única puerta superior hacia el
+        // padre,
         // en parent una puerta inferior hacia el child (una por hijo).
         for (int idx = 1; idx <= totalNodes; idx++) {
             BinaryTreeNode<MineRoom> parent = nodes[idx];
@@ -91,29 +82,32 @@ public class SimpleMapBuilder {
         MineRoom cRoom = child.getInfo();
 
         // En child: puerta superior (única) hacia parent
-        java.awt.Rectangle childDoor = new java.awt.Rectangle(cRoom.width/2 - 40, 10, 80, 28);
-        int parentSpawnX = pRoom.width/2;
+        java.awt.Rectangle childDoor = new java.awt.Rectangle(cRoom.width / 2 - 40, 10, 80, 28);
+        int parentSpawnX = pRoom.width / 2;
         int parentSpawnY = pRoom.height - 80;
         Door childToParent = new Door(childDoor, parent, parentSpawnX, parentSpawnY);
         childToParent.label = childToParent.destino != null && childToParent.destino.getInfo() != null
-                ? String.valueOf(childToParent.destino.getInfo().id) : "";
+                ? String.valueOf(childToParent.destino.getInfo().id)
+                : "";
         cRoom.doors.add(childToParent);
 
         // En parent: puerta inferior hacia child (izq/der)
         boolean isLeftChild = parent.getLeft() != null && parent.getLeft().equals(child);
         int offset = isLeftChild ? -80 : 80;
-        int px = Math.max(60, Math.min(pRoom.width - 60, pRoom.width/2 + offset));
+        int px = Math.max(60, Math.min(pRoom.width - 60, pRoom.width / 2 + offset));
         java.awt.Rectangle parentDoor = new java.awt.Rectangle(px - 40, pRoom.height - 38, 80, 28);
-        int childSpawnX = cRoom.width/2;
+        int childSpawnX = cRoom.width / 2;
         int childSpawnY = 80;
         Door parentToChild = new Door(parentDoor, child, childSpawnX, childSpawnY);
         parentToChild.label = parentToChild.destino != null && parentToChild.destino.getInfo() != null
-                ? String.valueOf(parentToChild.destino.getInfo().id) : "";
+                ? String.valueOf(parentToChild.destino.getInfo().id)
+                : "";
         pRoom.doors.add(parentToChild);
     }
 
     /**
-     * Elige una sala aleatoria que no sea la raíz recorriendo el árbol desde la raíz.
+     * Elige una sala aleatoria que no sea la raíz recorriendo el árbol desde la
+     * raíz.
      */
     public static BinaryTreeNode<MineRoom> pickRandomNonRootNode(BinaryTree<MineRoom> map) {
         if (map == null)
@@ -132,7 +126,8 @@ public class SimpleMapBuilder {
                 continue;
             // excluir root nivel 0
             try {
-                if (map.nodeLevel(cur) != 0) candidates.add(cur);
+                if (map.nodeLevel(cur) != 0)
+                    candidates.add(cur);
             } catch (Exception ex) {
                 // si nodeLevel no funciona por alguna razón, añadir (se filtrará luego)
                 candidates.add(cur);
@@ -144,7 +139,8 @@ public class SimpleMapBuilder {
         }
 
         // si por alguna razón sólo tenemos la raíz, devolver null
-        if (candidates.isEmpty()) return null;
+        if (candidates.isEmpty())
+            return null;
         return candidates.get(new java.util.Random().nextInt(candidates.size()));
     }
 

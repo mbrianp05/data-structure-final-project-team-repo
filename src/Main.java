@@ -1,13 +1,4 @@
 import menu.MainMenuPanel;
-import effects.*;
-import entities.*;
-import perks.*;
-import weapons.*;
-import menu.*;
-import game.*;
-import java.util.*;
-import map.*;
-import utils.*;
 import javax.swing.SwingUtilities;
 
 public class Main {

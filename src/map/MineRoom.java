@@ -3,18 +3,11 @@ package map;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import effects.*;
-import entities.*;
-import perks.*;
-import weapons.*;
-import menu.*;
-import game.*;
 import java.util.*;
-import map.*;
-import utils.*;
 
 /**
- * Datos de una sala (un nodo del árbol). Contiene puertas, drops y dimensiones locales.
+ * Datos de una sala (un nodo del árbol). Contiene puertas, drops y dimensiones
+ * locales.
  */
 public class MineRoom {
     public int id;
@@ -36,7 +29,8 @@ public class MineRoom {
     // cuántas veces se limpió esta sala (usado para escalar spawn y dropeos)
     public int clearCount = 0;
 
-    // flag temporal para evitar incrementar clearCount múltiples veces en el mismo frame
+    // flag temporal para evitar incrementar clearCount múltiples veces en el mismo
+    // frame
     public boolean wasCleared = false;
 
     // Nuevo: tipo de piso asignado a la sala (1–5)
@@ -59,26 +53,36 @@ public class MineRoom {
 
     /** Añade un objeto map.Key (con posición) a la sala */
     public void addKeyObject(Key k) {
-        if (k == null) return;
+        if (k == null)
+            return;
         keys.add(k);
     }
 
     /** Añade sólo el id lógico de la llave (sin posición) */
     public void addKeyToRoom(String keyId) {
-        if (keyId == null) return;
-        if (!hasKeyInRoom(keyId)) keysInRoom.add(keyId);
+        if (keyId == null)
+            return;
+        if (!hasKeyInRoom(keyId))
+            keysInRoom.add(keyId);
     }
 
     /** Comprueba si la sala contiene el id de llave (lógica) */
     public boolean hasKeyInRoom(String keyId) {
-        if (keyId == null) return false;
-        for (String k : keysInRoom) if (k.equals(keyId)) return true;
+        if (keyId == null)
+            return false;
+        for (String k : keysInRoom)
+            if (k.equals(keyId))
+                return true;
         return false;
     }
 
-    /** Elimina la llave física (objeto map.Key) de la sala por id; devuelve true si se eliminó */
+    /**
+     * Elimina la llave física (objeto map.Key) de la sala por id; devuelve true si
+     * se eliminó
+     */
     public boolean removeKeyObjectById(String keyId) {
-        if (keyId == null) return false;
+        if (keyId == null)
+            return false;
         for (int i = 0; i < keys.size(); i++) {
             Key k = keys.get(i);
             if (k != null && keyId.equals(k.id)) {

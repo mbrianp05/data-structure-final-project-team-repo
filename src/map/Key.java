@@ -1,14 +1,4 @@
 package map;
-import effects.*;
-import entities.*;
-import perks.*;
-import weapons.*;
-import menu.*;
-import game.*;
-import java.util.*;
-import map.*;
-import utils.*;
-
 
 public class Key {
     public float x;
