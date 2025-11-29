@@ -426,7 +426,14 @@ public class GameController {
         BinaryTreeNode<MineRoom> root = (BinaryTreeNode<MineRoom>) map.getRoot();
         if (!root.equals(node))
             return false;
-        // check for boss alive in this node
+
+        // Si es la raíz y ya se spawneó el boss alguna vez, no permitir más spawns
+        MineRoom rootRoom = root.getInfo();
+        if (rootRoom != null && rootRoom.bossSpawned) {
+            return true; // bloquear spawns adicionales
+        }
+
+        // Si no se ha marcado bossSpawned, verificar si hay un boss vivo actualmente
         List<Enemy> list = enemyManager.getEnemiesAt(node);
         for (Enemy e : list) {
             if (e instanceof BossEnemy && e.isAlive())
@@ -660,11 +667,12 @@ public class GameController {
                     break;
                 }
             }
-            if (!bossExists) {
+            if (!bossExists && !r.bossSpawned) {
                 float sx = r.width / 2f;
                 float sy = r.height / 2f;
-                BossEnemy boss = new BossEnemy(node, sx, sy, 1, 1f, 1);
+                BossEnemy boss = new BossEnemy(node, sx, sy, 2000, 14f, 10);
                 enemyManager.addEnemyAt(node, boss);
+                r.bossSpawned = true; // marcar que el boss fue spawneado
                 System.out.println("Jefe final ha aparecido en la raíz.");
             }
             return;
