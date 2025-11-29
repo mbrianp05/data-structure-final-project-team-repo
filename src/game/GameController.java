@@ -347,13 +347,23 @@ public class GameController {
         if (room == null)
             return;
 
-        // --- SPECIAL: Si es un BossEnemy, dropear la llave dorada ---
+        // --- SPECIAL: Si es un BossEnemy, dropear la llave dorada en una sala
+        // aleatoria ---
         if (e instanceof BossEnemy) {
-            float ex = e.getX();
-            float ey = e.getY();
-            Key goldenKey = new Key(ex, ey, "golden-key");
-            room.keys.add(goldenKey);
-            System.out.println("¡El jefe ha sido derrotado! La llave dorada aparece en la sala.");
+            BinaryTreeNode<MineRoom> randomNode = SimpleMapBuilder.pickRandomNonRootNode(map);
+            if (randomNode != null) {
+                MineRoom randomRoom = randomNode.getInfo();
+                if (randomRoom != null) {
+                    // Posición aleatoria dentro de la sala
+                    int margin = 60;
+                    float kx = margin + rnd.nextFloat() * Math.max(1, randomRoom.width - margin * 2);
+                    float ky = margin + rnd.nextFloat() * Math.max(1, randomRoom.height - margin * 2);
+                    Key goldenKey = new Key(kx, ky, "golden-key");
+                    randomRoom.keys.add(goldenKey);
+                    System.out.println("¡El jefe ha sido derrotado! La llave dorada aparece en una sala aleatoria (ID: "
+                            + randomRoom.id + ").");
+                }
+            }
         }
 
         int basePerLevel = 4; // base gems per enemy level
@@ -653,7 +663,7 @@ public class GameController {
             if (!bossExists) {
                 float sx = r.width / 2f;
                 float sy = r.height / 2f;
-                BossEnemy boss = new BossEnemy(node, sx, sy, 2000, 14f, 10);
+                BossEnemy boss = new BossEnemy(node, sx, sy, 1, 1f, 1);
                 enemyManager.addEnemyAt(node, boss);
                 System.out.println("Jefe final ha aparecido en la raíz.");
             }
