@@ -15,7 +15,8 @@ import map.MineRoom;
 import map.SimpleMapBuilder;
 
 /**
- * menu.GameWindow: crea el mapa, controlador y game.GamePanel; escucha eventos de game.GameController.
+ * menu.GameWindow: crea el mapa, controlador y game.GamePanel; escucha eventos
+ * de game.GameController.
  * Añade pausa con ESC que realmente detiene/reanuda el loop del game.GamePanel.
  */
 public class GameWindow implements GameEventListener {
@@ -33,13 +34,15 @@ public class GameWindow implements GameEventListener {
         BinaryTreeNode<MineRoom> start = SimpleMapBuilder.pickRandomLeaf(map);
         if (start == null) {
             Tree.TreeNode<MineRoom> root = map.getRoot();
-            if (root instanceof BinaryTreeNode) start = (BinaryTreeNode<MineRoom>) root;
+            if (root instanceof BinaryTreeNode)
+                start = (BinaryTreeNode<MineRoom>) root;
         }
 
         controller = new GameController(map, start);
         controller.setGameEventListener(this);
 
-        // Crear game.GamePanel pasando el controller. Ajusta si tu constructor es diferente.
+        // Crear game.GamePanel pasando el controller. Ajusta si tu constructor es
+        // diferente.
         gamePanel = new GamePanel(controller);
 
         frame = new JFrame("Mi Juego");
@@ -51,18 +54,21 @@ public class GameWindow implements GameEventListener {
         // agregar el panel del juego
         frame.add(gamePanel, BorderLayout.CENTER);
 
-        // Configurar map.Key Bindings en el game.GamePanel para ESC (más fiable que KeyListener en el frame)
+        // Configurar map.Key Bindings en el game.GamePanel para ESC (más fiable que
+        // KeyListener en el frame)
         setupPauseKeyBinding();
 
         frame.setVisible(true);
 
-        // Si game.GamePanel necesita inicio explícito de loop, invoca start/initialize aquí.
+        // Si game.GamePanel necesita inicio explícito de loop, invoca start/initialize
+        // aquí.
         invokeIfExists(gamePanel, "startLoop");
     }
 
     // configura map.Key Binding en gamePanel: ESC para toggle pausa
     private void setupPauseKeyBinding() {
-        // usar WHEN_IN_FOCUSED_WINDOW para que funcione aunque gamePanel no tenga focus exacto
+        // usar WHEN_IN_FOCUSED_WINDOW para que funcione aunque gamePanel no tenga focus
+        // exacto
         InputMap im = gamePanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = gamePanel.getActionMap();
 
@@ -76,12 +82,15 @@ public class GameWindow implements GameEventListener {
     }
 
     private void togglePause() {
-        if (!isPaused) showPauseOverlay();
-        else hidePauseOverlay();
+        if (!isPaused)
+            showPauseOverlay();
+        else
+            hidePauseOverlay();
     }
 
     private void showPauseOverlay() {
-        if (isPaused || frame == null || gamePanel == null) return;
+        if (isPaused || frame == null || gamePanel == null)
+            return;
         isPaused = true;
 
         // Primero, pausar el game.GamePanel (detiene Timer y notifica al controlador)
@@ -102,15 +111,15 @@ public class GameWindow implements GameEventListener {
                 },
                 () -> { // onExitToMenu
                     cleanupAndReturnToMenu();
-                }
-        );
+                });
 
         // agregar overlay al LayeredPane para aparecer encima del game.GamePanel
         JLayeredPane layered = frame.getLayeredPane();
         layered.add(pausePanel, JLayeredPane.POPUP_LAYER);
 
         // fijar tamaño y posición del overlay para cubrir la ventana de contenido
-        // usamos getContentPane().getBounds() y convertimos a coordenadas de layeredPane
+        // usamos getContentPane().getBounds() y convertimos a coordenadas de
+        // layeredPane
         Rectangle contentBounds = frame.getContentPane().getBounds();
         Point contentLoc = SwingUtilities.convertPoint(frame.getContentPane(), 0, 0, layered);
         pausePanel.setBounds(contentLoc.x, contentLoc.y, contentBounds.width, contentBounds.height);
@@ -118,12 +127,14 @@ public class GameWindow implements GameEventListener {
         pausePanel.revalidate();
         pausePanel.repaint();
 
-        // asegurar foco para que se siga capturando ESC y que input vuelva a game.GamePanel al reanudar
+        // asegurar foco para que se siga capturando ESC y que input vuelva a
+        // game.GamePanel al reanudar
         frame.requestFocusInWindow();
     }
 
     private void hidePauseOverlay() {
-        if (!isPaused || frame == null || gamePanel == null) return;
+        if (!isPaused || frame == null || gamePanel == null)
+            return;
         isPaused = false;
 
         // remover overlay PRIMERO para liberar foco y componentes
@@ -144,7 +155,8 @@ public class GameWindow implements GameEventListener {
             ex.printStackTrace();
         }
 
-        // garantizar que el game.GamePanel reciba foco (usar invokeLater para que Swing procese la remoción del overlay)
+        // garantizar que el game.GamePanel reciba foco (usar invokeLater para que Swing
+        // procese la remoción del overlay)
         SwingUtilities.invokeLater(() -> {
             gamePanel.requestFocusInWindow();
             frame.requestFocusInWindow();
@@ -153,12 +165,12 @@ public class GameWindow implements GameEventListener {
         System.out.println("menu.GameWindow: pausa ocultada (overlay removido, panel reanudado)");
     }
 
-
     private void cleanupAndReturnToMenu() {
         // detener/limpiar el panel del juego
         invokeIfExists(gamePanel, "stopLoop");
 
-        if (frame != null) frame.dispose();
+        if (frame != null)
+            frame.dispose();
 
         SwingUtilities.invokeLater(() -> {
             MainMenuPanel menu = new MainMenuPanel();
@@ -170,8 +182,19 @@ public class GameWindow implements GameEventListener {
     public void onWin() {
         // si gana estando pausado, cerrar overlay y mostrar victory
         SwingUtilities.invokeLater(() -> {
-            if (isPaused) hidePauseOverlay();
+            if (isPaused)
+                hidePauseOverlay();
             showVictoryPanel();
+        });
+    }
+
+    @Override
+    public void onGameOver() {
+        // mostrar panel de game over
+        SwingUtilities.invokeLater(() -> {
+            if (isPaused)
+                hidePauseOverlay();
+            showGameOverPanel();
         });
     }
 
@@ -196,12 +219,47 @@ public class GameWindow implements GameEventListener {
         c.repaint();
     }
 
+    private void showGameOverPanel() {
+        // detener loop del game.GamePanel
+        invokeIfExists(gamePanel, "stopLoop");
+
+        Container c = frame.getContentPane();
+        c.removeAll();
+
+        GameOverPanel gop = new GameOverPanel(
+                () -> { // onRestart
+                    restartGame();
+                },
+                () -> { // onExit
+                    cleanupAndReturnToMenu();
+                });
+
+        c.add(gop, BorderLayout.CENTER);
+        c.revalidate();
+        c.repaint();
+    }
+
+    private void restartGame() {
+        // cerrar ventana actual
+        if (frame != null) {
+            frame.dispose();
+        }
+
+        // crear nueva ventana de juego
+        SwingUtilities.invokeLater(() -> {
+            GameWindow newGame = new GameWindow();
+            newGame.showGameWindow();
+        });
+    }
+
     // utilitario: invoca un método sin argumentos por reflexión si existe
     private void invokeIfExists(Object target, String methodName) {
-        if (target == null) return;
+        if (target == null)
+            return;
         try {
             Method m = target.getClass().getMethod(methodName);
-            if (m != null) m.invoke(target);
+            if (m != null)
+                m.invoke(target);
         } catch (NoSuchMethodException nsme) {
             // método no existe: ignorar
         } catch (Exception ex) {
@@ -209,10 +267,10 @@ public class GameWindow implements GameEventListener {
         }
     }
 
-
     // util: intenta pause/resume y si no existe usa startLoop/stopLoop
     private void pauseGamePanel() throws InvocationTargetException, IllegalAccessException {
-        if (gamePanel == null) return;
+        if (gamePanel == null)
+            return;
         try {
             java.lang.reflect.Method m = gamePanel.getClass().getMethod("pause");
             m.invoke(gamePanel);
@@ -224,7 +282,8 @@ public class GameWindow implements GameEventListener {
     }
 
     private void resumeGamePanel() {
-        if (gamePanel == null) return;
+        if (gamePanel == null)
+            return;
         try {
             java.lang.reflect.Method m = gamePanel.getClass().getMethod("resume");
             m.invoke(gamePanel);
@@ -238,7 +297,8 @@ public class GameWindow implements GameEventListener {
         try {
             java.lang.reflect.Method r = gamePanel.getClass().getMethod("resetInputState");
             r.invoke(gamePanel);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) { }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
+        }
         // ensure focus
         gamePanel.requestFocusInWindow();
     }

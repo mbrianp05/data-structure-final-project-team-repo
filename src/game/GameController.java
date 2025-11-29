@@ -26,8 +26,10 @@ public class GameController {
     public final Player player;
     public final EnemyManager enemyManager;
     public final PerkPool pool;
-    // diagnóstico: evita spam imprimiendo la traza solo la primera vez durante pausa
-    private final java.util.concurrent.atomic.AtomicBoolean _loggedUpdateWhilePaused = new java.util.concurrent.atomic.AtomicBoolean(false);
+    // diagnóstico: evita spam imprimiendo la traza solo la primera vez durante
+    // pausa
+    private final java.util.concurrent.atomic.AtomicBoolean _loggedUpdateWhilePaused = new java.util.concurrent.atomic.AtomicBoolean(
+            false);
 
     // temporales visuales / físicas
     private final List<Projectile> projectiles = new ArrayList<>();
@@ -57,9 +59,10 @@ public class GameController {
                 resolvedStart = SimpleMapBuilder.pickRandomLeaf(map);
             } else {
                 TreeNode<MineRoom> root = map != null ? map.getRoot() : null;
-                if (root instanceof BinaryTreeNode && ((BinaryTreeNode<MineRoom>)root).equals(resolvedStart)) {
+                if (root instanceof BinaryTreeNode && ((BinaryTreeNode<MineRoom>) root).equals(resolvedStart)) {
                     BinaryTreeNode<MineRoom> leaf = SimpleMapBuilder.pickRandomLeaf(map);
-                    if (leaf != null) resolvedStart = leaf;
+                    if (leaf != null)
+                        resolvedStart = leaf;
                 }
             }
         } catch (Exception ex) {
@@ -79,15 +82,25 @@ public class GameController {
         player.recomputeDerivedStats();
         onPlayerEnter(nodoActual);
     }
+
     // -------------------------
     // EventListener
     // -------------------------
-    public void setGameEventListener(GameEventListener l) { this.eventListener = l; }
+    public void setGameEventListener(GameEventListener l) {
+        this.eventListener = l;
+    }
 
     private void notifyWin() {
         System.out.println("¡Has alcanzado la salida! Victoria.");
         if (eventListener != null) {
             SwingUtilities.invokeLater(() -> eventListener.onWin());
+        }
+    }
+
+    private void notifyGameOver() {
+        System.out.println("Game Over - El jugador ha sido derrotado.");
+        if (eventListener != null) {
+            SwingUtilities.invokeLater(() -> eventListener.onGameOver());
         }
     }
 
@@ -97,16 +110,17 @@ public class GameController {
     public void update(float dt, List<Rectangle> roomWalls) {
         // si modal abierto, solo animar effects (opcional)
         // defensa: si la pausa fue activada externamente, no ejecutar update
-        // defensa + diagnóstico: bloquear updates externos cuando el controlador está marcado en pausa
+        // defensa + diagnóstico: bloquear updates externos cuando el controlador está
+        // marcado en pausa
         if (this.externallyPaused) {
             // imprimir la pila una sola vez para localizar el llamador externo
             if (_loggedUpdateWhilePaused.compareAndSet(false, true)) {
-                System.out.println("game.GameController.update called while externallyPaused==true — stacktrace to locate caller:");
+                System.out.println(
+                        "game.GameController.update called while externallyPaused==true — stacktrace to locate caller:");
                 Thread.dumpStack();
             }
             return;
         }
-
 
         if (levelUpModalOpen) {
             updateEffects(dt);
@@ -114,7 +128,8 @@ public class GameController {
         }
 
         MineRoom room = nodoActual != null ? nodoActual.getInfo() : null;
-        if (room == null) return;
+        if (room == null)
+            return;
 
         // puertas (transición)
         for (Door door : new ArrayList<>(room.doors)) {
@@ -135,7 +150,8 @@ public class GameController {
 
         // actualizar enemigos
         List<Enemy> enemies = new ArrayList<>(enemyManager.getEnemiesAt(nodoActual));
-        for (Enemy e : enemies) e.update(dt, player, room);
+        for (Enemy e : enemies)
+            e.update(dt, player, room);
 
         // colisiones
         resolveEnemyEnemyCollisions(enemies, dt);
@@ -144,12 +160,20 @@ public class GameController {
         // actualizar jugador (disparos)
         player.update(dt, enemies, this);
 
+        // check if player is dead
+        if (!player.alive) {
+            notifyGameOver();
+            return;
+        }
+
         // recolección de cristales y llaves
         collectCrystals(room);
         collectKeys(room);
 
-        // procesar muertes: si enemies murieron durante update, onEnemyKilled debe haber sido llamado por entities.Enemy
-        // ahora comprobamos si la sala está limpia y manejamos clearCount (solo una vez por transición a limpia)
+        // procesar muertes: si enemies murieron durante update, onEnemyKilled debe
+        // haber sido llamado por entities.Enemy
+        // ahora comprobamos si la sala está limpia y manejamos clearCount (solo una vez
+        // por transición a limpia)
         handleRoomClearedIfNeeded(nodoActual);
 
         // spawns: si sala limpia, spawnear nueva oleada escalada
@@ -169,32 +193,38 @@ public class GameController {
     // Projectiles / Effects
     // -------------------------
     public void spawnProjectile(Projectile p) {
-        if (p == null) return;
+        if (p == null)
+            return;
         projectiles.add(p);
     }
 
     public void spawnEffect(Effect e) {
-        if (e == null) return;
+        if (e == null)
+            return;
         effects.add(e);
     }
 
     private void updateProjectiles(float dt) {
-        if (projectiles.isEmpty()) return;
+        if (projectiles.isEmpty())
+            return;
         List<Projectile> alive = new ArrayList<>();
         for (Projectile p : projectiles) {
             p.update(dt, this);
-            if (!p.isExpired()) alive.add(p);
+            if (!p.isExpired())
+                alive.add(p);
         }
         projectiles.clear();
         projectiles.addAll(alive);
     }
 
     private void updateEffects(float dt) {
-        if (effects.isEmpty()) return;
+        if (effects.isEmpty())
+            return;
         List<Effect> alive = new ArrayList<>();
         for (Effect ef : effects) {
             ef.update(dt, this);
-            if (!ef.isExpired()) alive.add(ef);
+            if (!ef.isExpired())
+                alive.add(ef);
         }
         effects.clear();
         effects.addAll(alive);
@@ -202,13 +232,16 @@ public class GameController {
 
     public void renderProjectiles(Graphics g, int screenW, int screenH) {
         MineRoom r = nodoActual != null ? nodoActual.getInfo() : null;
-        if (r == null) return;
+        if (r == null)
+            return;
         int ox = (screenW - r.width) / 2;
         int oy = (screenH - r.height) / 2 - 20;
         Graphics2D g2 = (Graphics2D) g.create();
         g2.translate(ox, oy);
-        for (Projectile p : projectiles) p.render(g2);
-        for (Effect ef : effects) ef.render(g2);
+        for (Projectile p : projectiles)
+            p.render(g2);
+        for (Effect ef : effects)
+            ef.render(g2);
         g2.translate(-ox, -oy);
         g2.dispose();
     }
@@ -217,13 +250,15 @@ public class GameController {
     // Recolección -> XP
     // -------------------------
     private void collectCrystals(MineRoom room) {
-        if (room == null) return;
+        if (room == null)
+            return;
         List<Crystal> toRemove = new ArrayList<>();
         for (Crystal c : new ArrayList<>(room.drops)) {
-            if (c.collected) continue;
+            if (c.collected)
+                continue;
             float dx = player.x - c.x;
             float dy = player.y - c.y;
-            if (dx*dx + dy*dy < 20f * 20f) {
+            if (dx * dx + dy * dy < 20f * 20f) {
                 c.collected = true;
                 toRemove.add(c);
                 player.addXp(c.value, this);
@@ -237,7 +272,8 @@ public class GameController {
     // -------------------------
     public void onPlayerLeveledUp(int newLevel) {
         pendingLevelUps.add(newLevel);
-        if (!levelUpModalOpen) openNextLevelUpModal();
+        if (!levelUpModalOpen)
+            openNextLevelUpModal();
     }
 
     private void openNextLevelUpModal() {
@@ -251,41 +287,53 @@ public class GameController {
         System.out.println("Subiste a nivel " + lvl + ". Elige una mejora:");
         for (int i = 0; i < currentChoices.size(); i++) {
             Choice c = currentChoices.get(i);
-            System.out.println((i+1) + ") " + c.name + " - " + c.description);
+            System.out.println((i + 1) + ") " + c.name + " - " + c.description);
         }
     }
 
-    public boolean isLevelUpModalOpen() { return levelUpModalOpen; }
-    public List<Choice> getCurrentChoices() { return currentChoices; }
+    public boolean isLevelUpModalOpen() {
+        return levelUpModalOpen;
+    }
+
+    public List<Choice> getCurrentChoices() {
+        return currentChoices;
+    }
 
     public void onLevelUpChoiceSelected(int index) {
-        if (!levelUpModalOpen) return;
-        if (index < 0 || index >= currentChoices.size()) return;
+        if (!levelUpModalOpen)
+            return;
+        if (index < 0 || index >= currentChoices.size())
+            return;
         Choice choice = currentChoices.get(index);
         player.applyChoice(choice);
         player.recomputeDerivedStats();
         levelUpModalOpen = false;
         currentChoices = new ArrayList<>();
-        if (!pendingLevelUps.isEmpty()) openNextLevelUpModal();
+        if (!pendingLevelUps.isEmpty())
+            openNextLevelUpModal();
     }
 
     // -------------------------
     // entities.Enemy killed: drop crystals escalados
     // -------------------------
     public void onEnemyKilled(Enemy e) {
-        if (e == null) return;
+        if (e == null)
+            return;
 
-        // intentar obtener la sala donde estaba el enemigo, si entities.Enemy tiene getNode() usarlo; si no fallback a nodoActual
+        // intentar obtener la sala donde estaba el enemigo, si entities.Enemy tiene
+        // getNode() usarlo; si no fallback a nodoActual
         BinaryTreeNode<MineRoom> node = nodoActual;
         try {
             java.lang.reflect.Method m = e.getClass().getMethod("getNode");
             Object nodeObj = m.invoke(e);
-            if (nodeObj instanceof BinaryTreeNode) node = (BinaryTreeNode<MineRoom>) nodeObj;
+            if (nodeObj instanceof BinaryTreeNode)
+                node = (BinaryTreeNode<MineRoom>) nodeObj;
         } catch (Exception ex) {
             // fallback: no hay getNode(), usamos nodoActual
         }
 
-        if (node == null) node = nodoActual;
+        if (node == null)
+            node = nodoActual;
         if (node == null) {
             enemyManager.removeEnemy(e);
             return;
@@ -296,9 +344,19 @@ public class GameController {
 
         // drop crystals in that room
         MineRoom room = node.getInfo();
-        if (room == null) return;
+        if (room == null)
+            return;
 
-        int basePerLevel = 4;                // base gems per enemy level
+        // --- SPECIAL: Si es un BossEnemy, dropear la llave dorada ---
+        if (e instanceof BossEnemy) {
+            float ex = e.getX();
+            float ey = e.getY();
+            Key goldenKey = new Key(ex, ey, "golden-key");
+            room.keys.add(goldenKey);
+            System.out.println("¡El jefe ha sido derrotado! La llave dorada aparece en la sala.");
+        }
+
+        int basePerLevel = 4; // base gems per enemy level
         int variance = 2;
         int clearMultiplier = 1 + Math.max(0, room.clearCount); // 1 for initial clearCount==0, then increases
         int numCrystals = Math.max(1, (basePerLevel * Math.max(1, e.level) * clearMultiplier) / 2);
@@ -316,15 +374,19 @@ public class GameController {
     }
 
     // alias si otros módulos esperan este método
-    public void onEnemyKilledPublic(Enemy e) { onEnemyKilled(e); }
+    public void onEnemyKilledPublic(Enemy e) {
+        onEnemyKilled(e);
+    }
 
     // -------------------------
     // Room clear handling and scaled spawns
     // -------------------------
     private void handleRoomClearedIfNeeded(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return;
+        if (node == null)
+            return;
         MineRoom room = node.getInfo();
-        if (room == null) return;
+        if (room == null)
+            return;
 
         boolean cleared = enemyManager.isCleared(node);
         if (!cleared) {
@@ -340,8 +402,8 @@ public class GameController {
             // optional: reward bonus XP/crystals on clear event
             int bonus = 2 + room.clearCount / 2;
             for (int i = 0; i < bonus; i++) {
-                float rx = room.width/2f + (rnd.nextFloat()-0.5f)*48f;
-                float ry = room.height/2f + (rnd.nextFloat()-0.5f)*48f;
+                float rx = room.width / 2f + (rnd.nextFloat() - 0.5f) * 48f;
+                float ry = room.height / 2f + (rnd.nextFloat() - 0.5f) * 48f;
                 int val = 4 + rnd.nextInt(3) + room.clearCount;
                 room.drops.add(new Crystal(rx, ry, val));
             }
@@ -349,33 +411,46 @@ public class GameController {
     }
 
     private boolean isRootWithActiveBoss(BinaryTreeNode<MineRoom> node) {
-        if (node == null || map == null || map.getRoot() == null) return false;
+        if (node == null || map == null || map.getRoot() == null)
+            return false;
         BinaryTreeNode<MineRoom> root = (BinaryTreeNode<MineRoom>) map.getRoot();
-        if (!root.equals(node)) return false;
+        if (!root.equals(node))
+            return false;
         // check for boss alive in this node
         List<Enemy> list = enemyManager.getEnemiesAt(node);
         for (Enemy e : list) {
-            if (e instanceof BossEnemy && e.isAlive()) return true;
+            if (e instanceof BossEnemy && e.isAlive())
+                return true;
         }
         return false;
     }
 
     private int calculateSpawnAmountForNode(BinaryTreeNode<MineRoom> node) {
         int nivel = 0;
-        try { nivel = Math.max(0, map.nodeLevel(node)); } catch (Exception ex) { nivel = 0; }
+        try {
+            nivel = Math.max(0, map.nodeLevel(node));
+        } catch (Exception ex) {
+            nivel = 0;
+        }
         int altura = 1;
-        try { altura = Math.max(1, map.treeHeight()); } catch (Exception ex) { altura = 1; }
-        double factor = 1.0 - (double)nivel / altura;
+        try {
+            altura = Math.max(1, map.treeHeight());
+        } catch (Exception ex) {
+            altura = 1;
+        }
+        double factor = 1.0 - (double) nivel / altura;
         int base = BASE_SPAWN;
         int maxExtra = 18;
-        return base + (int)Math.round(maxExtra * factor);
+        return base + (int) Math.round(maxExtra * factor);
     }
 
     // spawn scaled by room.clearCount
     private void spawnHordeScaled(BinaryTreeNode<MineRoom> node, int baseAmount, float spawnDistance) {
-        if (node == null || baseAmount <= 0) return;
+        if (node == null || baseAmount <= 0)
+            return;
         MineRoom r = node.getInfo();
-        if (r == null) return;
+        if (r == null)
+            return;
 
         int clearTimes = Math.max(0, r.clearCount);
         int amount = baseAmount + Math.round(baseAmount * SCALE_PER_CLEAR * clearTimes);
@@ -387,9 +462,11 @@ public class GameController {
 
     // actual spawn impl (similar a la anterior lógica)
     private void spawnHordeInternal(BinaryTreeNode<MineRoom> node, int amount, float spawnDistance) {
-        if (node == null || amount <= 0) return;
+        if (node == null || amount <= 0)
+            return;
         MineRoom r = node.getInfo();
-        if (r == null) return;
+        if (r == null)
+            return;
 
         float cx = r.width / 2f;
         float cy = r.height / 2f;
@@ -399,8 +476,8 @@ public class GameController {
         for (int i = 0; i < amount; i++) {
             double ang = rnd.nextDouble() * Math.PI * 2.0;
             double rad = dist * (0.8 + rnd.nextDouble() * 0.4);
-            float sx = cx + (float)Math.cos(ang) * (float)rad;
-            float sy = cy + (float)Math.sin(ang) * (float)rad;
+            float sx = cx + (float) Math.cos(ang) * (float) rad;
+            float sy = cy + (float) Math.sin(ang) * (float) rad;
 
             if (sx >= 0 && sx <= r.width && sy >= 0 && sy <= r.height) {
                 float dl = Math.abs(sx - 0);
@@ -409,10 +486,14 @@ public class GameController {
                 float db = Math.abs(sy - r.height);
                 float min = Math.min(Math.min(dl, dr), Math.min(dt, db));
                 float pad = Math.max(40f, Math.min(120f, dist * 0.4f));
-                if (min == dl) sx = -pad;
-                else if (min == dr) sx = r.width + pad;
-                else if (min == dt) sy = -pad;
-                else sy = r.height + pad;
+                if (min == dl)
+                    sx = -pad;
+                else if (min == dr)
+                    sx = r.width + pad;
+                else if (min == dt)
+                    sy = -pad;
+                else
+                    sy = r.height + pad;
             }
 
             // scale enemy level by subtree height (approx) to diversify
@@ -425,15 +506,18 @@ public class GameController {
             spawnList.add(e);
         }
 
-        for (Enemy e : spawnList) enemyManager.addEnemyAt(node, e);
+        for (Enemy e : spawnList)
+            enemyManager.addEnemyAt(node, e);
     }
 
     // helper subtree height
     private int subtreeHeight(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return -1;
+        if (node == null)
+            return -1;
         BinaryTreeNode<MineRoom> left = node.getLeft();
         BinaryTreeNode<MineRoom> right = node.getRight();
-        if (left == null && right == null) return 0;
+        if (left == null && right == null)
+            return 0;
         int hl = left != null ? subtreeHeight(left) : -1;
         int hr = right != null ? subtreeHeight(right) : -1;
         return 1 + Math.max(hl, hr);
@@ -443,7 +527,8 @@ public class GameController {
     // Transition (puertas)
     // -------------------------
     private void transitionTo(Door door) {
-        if (door == null) return;
+        if (door == null)
+            return;
 
         if (door.isWin) {
             if (door.locked) {
@@ -459,13 +544,16 @@ public class GameController {
         MineRoom origenRoom = origenNode != null ? origenNode.getInfo() : null;
 
         BinaryTreeNode<MineRoom> destinoNode = door.destino;
-        if (destinoNode == null) return;
+        if (destinoNode == null)
+            return;
         MineRoom destRoom = destinoNode.getInfo();
-        if (destRoom == null) return;
+        if (destRoom == null)
+            return;
 
         Door mirror = null;
         for (Door d : destRoom.doors) {
-            if (d == null) continue;
+            if (d == null)
+                continue;
             if (d.destino != null && origenNode != null && d.destino.equals(origenNode)) {
                 mirror = d;
                 break;
@@ -534,8 +622,10 @@ public class GameController {
     }
 
     private float clamp(float v, float min, float max) {
-        if (v < min) return min;
-        if (v > max) return max;
+        if (v < min)
+            return min;
+        if (v > max)
+            return max;
         return v;
     }
 
@@ -543,9 +633,11 @@ public class GameController {
     // onPlayerEnter: spawn boss in root or initial horde
     // -------------------------
     public void onPlayerEnter(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return;
+        if (node == null)
+            return;
         MineRoom r = node.getInfo();
-        if (r == null || r.colapsado) return;
+        if (r == null || r.colapsado)
+            return;
 
         BinaryTreeNode<MineRoom> rootT = (BinaryTreeNode<MineRoom>) map.getRoot();
         if (rootT != null && node.equals(rootT)) {
@@ -553,7 +645,10 @@ public class GameController {
             boolean bossExists = false;
             List<Enemy> existing = enemyManager.getEnemiesAt(node);
             for (Enemy e : existing) {
-                if (e instanceof BossEnemy && e.isAlive()) { bossExists = true; break; }
+                if (e instanceof BossEnemy && e.isAlive()) {
+                    bossExists = true;
+                    break;
+                }
             }
             if (!bossExists) {
                 float sx = r.width / 2f;
@@ -582,23 +677,27 @@ public class GameController {
     // -------------------------
     // Utility and collision placeholders
     // -------------------------
-    public void onEnemyKilledByExternal(Enemy e) { onEnemyKilled(e); } // alias if needed
+    public void onEnemyKilledByExternal(Enemy e) {
+        onEnemyKilled(e);
+    } // alias if needed
 
     // Placeholder simple collision resolvers (tweak to your version)
     private void resolveEnemyEnemyCollisions(List<Enemy> enemies, float dt) {
         int n = enemies.size();
         for (int i = 0; i < n; i++) {
             Enemy a = enemies.get(i);
-            if (!a.isAlive()) continue;
+            if (!a.isAlive())
+                continue;
             for (int j = i + 1; j < n; j++) {
                 Enemy b = enemies.get(j);
-                if (!b.isAlive()) continue;
+                if (!b.isAlive())
+                    continue;
                 float dx = b.getX() - a.getX();
                 float dy = b.getY() - a.getY();
-                float dist2 = dx*dx + dy*dy;
+                float dist2 = dx * dx + dy * dy;
                 float minDist = 18f;
                 if (dist2 > 0f && dist2 < minDist * minDist) {
-                    float dist = (float)Math.sqrt(dist2);
+                    float dist = (float) Math.sqrt(dist2);
                     float overlap = (minDist - dist);
                     float nx = dx / (dist + 1e-6f);
                     float ny = dy / (dist + 1e-6f);
@@ -612,20 +711,27 @@ public class GameController {
 
     private void resolveEnemyPlayerCollisions(List<Enemy> enemies, float dt) {
         for (Enemy e : enemies) {
-            if (!e.isAlive()) continue;
+            if (!e.isAlive())
+                continue;
             if (e.intersectsPlayer(player)) {
                 player.receiveDamage(e.contactDamage);
                 float dx = player.x - e.getX();
                 float dy = player.y - e.getY();
-                float d2 = dx*dx + dy*dy;
-                if (d2 < 0.0001f) { dx = 0.5f; dy = 0.5f; d2 = dx*dx + dy*dy; }
-                float d = (float)Math.sqrt(d2);
+                float d2 = dx * dx + dy * dy;
+                if (d2 < 0.0001f) {
+                    dx = 0.5f;
+                    dy = 0.5f;
+                    d2 = dx * dx + dy * dy;
+                }
+                float d = (float) Math.sqrt(d2);
                 float nx = dx / d;
                 float ny = dy / d;
                 float basePlayerPush = 60f;
-                player.applyKnockback(nx * basePlayerPush * (1f - 0.12f * e.level), ny * basePlayerPush * (1f - 0.12f * e.level));
+                player.applyKnockback(nx * basePlayerPush * (1f - 0.12f * e.level),
+                        ny * basePlayerPush * (1f - 0.12f * e.level));
                 float baseEnemyPush = 30f;
-                e.applyKnockback(-nx * baseEnemyPush * (1f - 0.08f * e.level), -ny * baseEnemyPush * (1f - 0.08f * e.level));
+                e.applyKnockback(-nx * baseEnemyPush * (1f - 0.08f * e.level),
+                        -ny * baseEnemyPush * (1f - 0.08f * e.level));
                 player.x += nx * 1.5f;
                 player.y += ny * 1.5f;
                 e.translate(-nx * 1.5f, -ny * 1.5f);
@@ -637,9 +743,11 @@ public class GameController {
     // Miscellaneous and utilities
     // -------------------------
     public void collapseNode(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return;
+        if (node == null)
+            return;
         MineRoom room = node.getInfo();
-        if (room != null) room.colapsado = true;
+        if (room != null)
+            room.colapsado = true;
         List<Enemy> enemies = new ArrayList<>(enemyManager.getEnemiesAt(node));
         for (Enemy en : enemies) {
             en.damage(9999, this);
@@ -666,20 +774,25 @@ public class GameController {
         notifyWin();
     }
 
-    /** Detecta pickup de llaves en la sala y las incorpora al inventario del jugador */
+    /**
+     * Detecta pickup de llaves en la sala y las incorpora al inventario del jugador
+     */
     private void collectKeys(MineRoom room) {
-        if (room == null) return;
+        if (room == null)
+            return;
         java.util.List<Key> toRemove = new java.util.ArrayList<>();
         for (Key k : new java.util.ArrayList<>(room.keys)) {
-            if (k == null || k.collected) continue;
+            if (k == null || k.collected)
+                continue;
             float dx = player.x - k.x;
             float dy = player.y - k.y;
-            if (dx*dx + dy*dy < 20f * 20f) { // distancia de recogida (ajustable)
+            if (dx * dx + dy * dy < 20f * 20f) { // distancia de recogida (ajustable)
                 k.collected = true;
                 toRemove.add(k);
                 // añadir al inventario lógico del jugador
                 player.addKey(k.id);
-                // opcional: también registrar id en room.keysInRoom si necesitas lógica de persistencia
+                // opcional: también registrar id en room.keysInRoom si necesitas lógica de
+                // persistencia
                 room.addKeyToRoom(k.id);
                 // evento/feedback
                 onPlayerPickedKey(k.id, room);
@@ -692,11 +805,16 @@ public class GameController {
         }
     }
 
-    /** Hook que puedes usar para reproducir sonido, mostrar toast, o desbloquear cosas */
+    /**
+     * Hook que puedes usar para reproducir sonido, mostrar toast, o desbloquear
+     * cosas
+     */
     private void onPlayerPickedKey(String keyId, MineRoom room) {
-        if (keyId == null) return;
+        if (keyId == null)
+            return;
         System.out.println("Llave recogida: " + keyId);
-        // ejemplo: si la llave recogida es la 'golden-key' y la raíz tiene una puerta bloqueada, la desbloqueamos
+        // ejemplo: si la llave recogida es la 'golden-key' y la raíz tiene una puerta
+        // bloqueada, la desbloqueamos
         try {
             BinaryTreeNode<MineRoom> root = (BinaryTreeNode<MineRoom>) map.getRoot();
             if (root != null) {
@@ -715,14 +833,17 @@ public class GameController {
         }
     }
 
-    // contar orbes orbitantes activos por jugador (usa el nombre de clase weapons.OrbittingOrb según tu código)
+    // contar orbes orbitantes activos por jugador (usa el nombre de clase
+    // weapons.OrbittingOrb según tu código)
     public int countOrbitingOrbsForPlayer(Player p) {
-        if (p == null) return 0;
+        if (p == null)
+            return 0;
         int c = 0;
         for (Effect ef : effects) {
             if (ef instanceof OrbittingOrb) {
                 OrbittingOrb o = (OrbittingOrb) ef;
-                if (!o.isExpired() && o.ownerPlayer == p) c++;
+                if (!o.isExpired() && o.ownerPlayer == p)
+                    c++;
             }
         }
         return c;
@@ -740,9 +861,13 @@ public class GameController {
     private volatile boolean externallyPaused = false;
 
     // setter público
-    public void setExternallyPaused(boolean v) { this.externallyPaused = v; }
+    public void setExternallyPaused(boolean v) {
+        this.externallyPaused = v;
+    }
 
     // getter opcional
-    public boolean isExternallyPaused() { return this.externallyPaused; }
+    public boolean isExternallyPaused() {
+        return this.externallyPaused;
+    }
 
 }
