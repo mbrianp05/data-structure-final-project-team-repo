@@ -28,7 +28,7 @@ public class LanternWeapon extends WeaponDef {
             }
         }
 
-        int dmg = 18 + level * 6;
+        int dmg = 14 + level * 6;   // damage reducido para los niveles iniciales
         float speed = 160f + level * 6f; // proyectil más lento que antes (antes 220)
         float life = 4f;
 
