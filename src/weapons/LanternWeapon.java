@@ -15,7 +15,6 @@ public class LanternWeapon extends WeaponDef {
 
     @Override
     public void fire(Player player, int level, List<Enemy> enemies, GameController controller) {
-        Enemy target = null;
         float best2 = Float.MAX_VALUE;
         for (Enemy e : enemies) {
             if (!e.isAlive())
@@ -24,7 +23,6 @@ public class LanternWeapon extends WeaponDef {
             float d2 = dx * dx + dy * dy;
             if (d2 < best2) {
                 best2 = d2;
-                target = e;
             }
         }
 

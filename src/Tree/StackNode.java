@@ -1,7 +1,7 @@
 package Tree;
 
 public class StackNode<E> {
-    private BinaryTreeNode<E> node;
+    private final BinaryTreeNode<E> node;
     private int count;
 
     public StackNode(BinaryTreeNode<E> node) {

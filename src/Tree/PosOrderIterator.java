@@ -6,7 +6,7 @@ public class PosOrderIterator<E> implements ITreeIterator<E> {
     private StackNode<E> nextNode;
     private BinaryTreeNode<E> currentNode;
     private Tree<E> tree;
-    private ArrayDeque<StackNode<E>> stack;
+    private final ArrayDeque<StackNode<E>> stack;
 
     public PosOrderIterator(Tree<E> tree) {
         this.tree = tree;
@@ -32,7 +32,7 @@ public class PosOrderIterator<E> implements ITreeIterator<E> {
             } else {
                 this.nextNode = null;
                 if (!this.stack.isEmpty()) {
-                    StackNode<E> father = (StackNode)this.stack.pop();
+                    StackNode<E> father = this.stack.pop();
                     this.nextNode = father;
                     if (father.getCount() == 1 && father.getRight() != null) {
                         father.incrementCount();
@@ -54,7 +54,7 @@ public class PosOrderIterator<E> implements ITreeIterator<E> {
         E currentInfo = null;
         BinaryTreeNode<E> current = this.nextNode();
         if (current != null) {
-            currentInfo = (E)current.getInfo();
+            currentInfo = current.getInfo();
         }
 
         return currentInfo;

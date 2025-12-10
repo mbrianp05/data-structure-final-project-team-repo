@@ -56,16 +56,16 @@ public class BinaryTree<E> extends Tree<E> implements Serializable {
                 this.deleteNotRoot(node, father);
             }
 
-            return (E)node.getInfo();
+            return node.getInfo();
         }
     }
 
     private void deleteNotRoot(BinaryTreeNode<E> node, BinaryTreeNode<E> father) {
         if (node != null && father != null) {
             if (father.getLeft() != null && father.getLeft().equals(node)) {
-                father.setLeft((BinaryTreeNode)null);
+                father.setLeft(null);
             } else if (father.getRight() != null && father.getRight().equals(node)) {
-                father.setRight((BinaryTreeNode)null);
+                father.setRight(null);
             }
         }
 
@@ -123,14 +123,14 @@ public class BinaryTree<E> extends Tree<E> implements Serializable {
                 this.getNodeSubTree(root.getLeft(), node, tree);
                 cursor.setLeft((BinaryTreeNode)tree.getRoot());
             } else {
-                cursor.setLeft((BinaryTreeNode)null);
+                cursor.setLeft(null);
             }
 
             if (root.getRight() != null && root.getRight().equals(node)) {
                 this.getNodeSubTree(root.getRight(), node, tree);
                 cursor.setRight((BinaryTreeNode)tree.getRoot());
             } else {
-                cursor.setRight((BinaryTreeNode)null);
+                cursor.setRight(null);
             }
 
             tree.setRoot(cursor);

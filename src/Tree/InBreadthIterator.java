@@ -3,7 +3,7 @@ package Tree;
 import java.util.ArrayDeque;
 
 public class InBreadthIterator<E> implements ITreeIterator<E> {
-    private ArrayDeque<BinaryTreeNode<E>> deque;
+    private final ArrayDeque<BinaryTreeNode<E>> deque;
     private BinaryTreeNode<E> currentNode;
     private BinaryTreeNode<E> nextNode;
     GeneralTree<E> tree;
@@ -27,11 +27,11 @@ public class InBreadthIterator<E> implements ITreeIterator<E> {
         E returnInfo = null;
         this.currentNode = this.nextNode;
         if (this.nextNode != null) {
-            returnInfo = (E)this.nextNode.getInfo();
+            returnInfo = this.nextNode.getInfo();
             if (this.deque.isEmpty()) {
                 this.nextNode = null;
             } else {
-                this.nextNode = (BinaryTreeNode)this.deque.poll();
+                this.nextNode = this.deque.poll();
                 if (!this.tree.nodeIsLeaf(this.nextNode)) {
                     this.deque.addAll(this.tree.getSons(this.nextNode));
                 }
@@ -47,7 +47,7 @@ public class InBreadthIterator<E> implements ITreeIterator<E> {
             if (this.deque.isEmpty()) {
                 this.nextNode = null;
             } else {
-                this.nextNode = (BinaryTreeNode)this.deque.poll();
+                this.nextNode = this.deque.poll();
                 if (!this.tree.nodeIsLeaf(this.nextNode)) {
                     this.deque.addAll(this.tree.getSons(this.nextNode));
                 }

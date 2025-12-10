@@ -20,7 +20,7 @@ public class BinaryTreeNode<E> extends TreeNode<E> implements Serializable {
     }
 
     public E getInfo() {
-        return (E)this.info;
+        return this.info;
     }
 
     public void setInfo(E info) {

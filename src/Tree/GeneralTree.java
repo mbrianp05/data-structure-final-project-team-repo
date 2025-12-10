@@ -73,7 +73,7 @@ class GeneralTree<E> extends Tree<E> implements Serializable {
                 }
 
                 if (foundedNode) {
-                    info = (E)node.getInfo();
+                    info = node.getInfo();
                 }
             }
         }

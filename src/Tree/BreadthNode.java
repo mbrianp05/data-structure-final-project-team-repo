@@ -31,6 +31,6 @@ public class BreadthNode<E> {
     }
 
     public E getInfo() {
-        return (E)this.node.getInfo();
+        return this.node.getInfo();
     }
 }

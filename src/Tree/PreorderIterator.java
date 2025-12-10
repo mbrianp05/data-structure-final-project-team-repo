@@ -5,8 +5,8 @@ import java.util.ArrayDeque;
 public class PreorderIterator<E> implements ITreeIterator<E> {
     private BinaryTreeNode<E> nextNode;
     private BinaryTreeNode<E> currentNode = null;
-    private Tree<E> tree;
-    private ArrayDeque<StackNode<E>> stack = new ArrayDeque();
+    private final Tree<E> tree;
+    private final ArrayDeque<StackNode<E>> stack = new ArrayDeque();
 
     public PreorderIterator(Tree<E> tree) {
         this.nextNode = (BinaryTreeNode)tree.getRoot();
@@ -21,7 +21,7 @@ public class PreorderIterator<E> implements ITreeIterator<E> {
         E currentInfo = null;
         BinaryTreeNode<E> current = this.nextNode();
         if (current != null) {
-            currentInfo = (E)current.getInfo();
+            currentInfo = current.getInfo();
         }
 
         return currentInfo;
@@ -47,7 +47,7 @@ public class PreorderIterator<E> implements ITreeIterator<E> {
                 StackNode<E> newStackNode = new StackNode(this.nextNode);
                 newStackNode.incrementCount();
                 this.stack.push(newStackNode);
-                StackNode<E> node = (StackNode)this.stack.pop();
+                StackNode<E> node = this.stack.pop();
                 node.incrementCount();
                 this.stack.push(node);
                 this.nextNode = this.nextNode.getRight();
@@ -55,7 +55,7 @@ public class PreorderIterator<E> implements ITreeIterator<E> {
                 boolean foundedNextNode = false;
 
                 while(!this.stack.isEmpty() && !foundedNextNode) {
-                    StackNode<E> father = (StackNode)this.stack.pop();
+                    StackNode<E> father = this.stack.pop();
                     if (father.getRight() != null && father.getCount() == 1) {
                         foundedNextNode = true;
                         this.nextNode = father.getRight();

@@ -173,7 +173,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
     private void applyPlayerInput(float dt) {
         Player p = controller.player;
-        float beforeX = p.x, beforeY = p.y;
         float moveSpeed = 140f * p.moveSpeedMultiplier;
         float vx = 0f, vy = 0f;
         if (left)

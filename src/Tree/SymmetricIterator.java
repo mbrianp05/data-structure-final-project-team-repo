@@ -6,7 +6,7 @@ public class SymmetricIterator<E> implements ITreeIterator<E> {
     private BinaryTreeNode<E> nextNode;
     private BinaryTreeNode<E> currentNode;
     private Tree<E> tree;
-    private ArrayDeque<StackNode<E>> stack;
+    private final ArrayDeque<StackNode<E>> stack;
 
     public SymmetricIterator(Tree<E> tree) {
         this.tree = tree;
@@ -31,7 +31,7 @@ public class SymmetricIterator<E> implements ITreeIterator<E> {
                     boolean foundedNextNode = false;
 
                     while(!this.stack.isEmpty() && !foundedNextNode) {
-                        StackNode<E> father = (StackNode)this.stack.pop();
+                        StackNode<E> father = this.stack.pop();
                         if (father.getCount() == 1) {
                             foundedNextNode = true;
                             this.nextNode = father.getNode();
@@ -52,7 +52,7 @@ public class SymmetricIterator<E> implements ITreeIterator<E> {
         E currentInfo = null;
         BinaryTreeNode<E> current = this.nextNode();
         if (current != null) {
-            currentInfo = (E)current.getInfo();
+            currentInfo = current.getInfo();
         }
 
         return currentInfo;

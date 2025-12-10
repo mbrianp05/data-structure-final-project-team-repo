@@ -113,9 +113,8 @@ public class SimpleMapBuilder {
         if (map == null)
             return null;
         TreeNode<MineRoom> rootT = map.getRoot();
-        if (!(rootT instanceof BinaryTreeNode))
+        if (!(rootT instanceof BinaryTreeNode<MineRoom> root))
             return null;
-        BinaryTreeNode<MineRoom> root = (BinaryTreeNode<MineRoom>) rootT;
         java.util.List<BinaryTreeNode<MineRoom>> candidates = new java.util.ArrayList<>();
         java.util.Queue<BinaryTreeNode<MineRoom>> q = new java.util.ArrayDeque<>();
         q.add(root);

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InBreadthIteratorWithLevels<E> implements ITreeIterator<E> {
-    private ArrayDeque<BreadthNode<E>> deque;
+    private final ArrayDeque<BreadthNode<E>> deque;
     private BreadthNode<E> currentNode;
     private BreadthNode<E> nextNode;
     GeneralTree<E> tree;
@@ -30,11 +30,11 @@ public class InBreadthIteratorWithLevels<E> implements ITreeIterator<E> {
         E returnInfo = null;
         this.currentNode = this.nextNode;
         if (this.nextNode != null) {
-            returnInfo = (E)this.nextNode.getInfo();
+            returnInfo = this.nextNode.getInfo();
             if (this.deque.isEmpty()) {
                 this.nextNode = null;
             } else {
-                this.nextNode = (BreadthNode)this.deque.poll();
+                this.nextNode = this.deque.poll();
                 if (!this.tree.nodeIsLeaf(this.nextNode.getNode())) {
                     ArrayList<BreadthNode<E>> sons = this.getSonsWithLevels(this.tree.getSons(this.nextNode.getNode()), this.nextNode.getLevel());
                     this.deque.addAll(sons);
@@ -51,7 +51,7 @@ public class InBreadthIteratorWithLevels<E> implements ITreeIterator<E> {
             if (this.deque.isEmpty()) {
                 this.nextNode = null;
             } else {
-                this.nextNode = (BreadthNode)this.deque.poll();
+                this.nextNode = this.deque.poll();
                 if (!this.tree.nodeIsLeaf(this.nextNode.getNode())) {
                     ArrayList<BreadthNode<E>> sons = this.getSonsWithLevels(this.tree.getSons(this.nextNode.getNode()), this.nextNode.getLevel());
                     this.deque.addAll(sons);
@@ -68,7 +68,7 @@ public class InBreadthIteratorWithLevels<E> implements ITreeIterator<E> {
             if (this.deque.isEmpty()) {
                 this.nextNode = null;
             } else {
-                this.nextNode = (BreadthNode)this.deque.poll();
+                this.nextNode = this.deque.poll();
                 if (!this.tree.nodeIsLeaf(this.nextNode.getNode())) {
                     ArrayList<BreadthNode<E>> sons = this.getSonsWithLevels(this.tree.getSons(this.nextNode.getNode()), this.nextNode.getLevel());
                     this.deque.addAll(sons);
