@@ -33,6 +33,10 @@ public class MineRoom {
     // frame
     public boolean wasCleared = false;
 
+    // flag para indicar si un boss ha sido spawneado en esta sala (usado en la
+    // raíz)
+    public boolean bossSpawned = false;
+
     // Nuevo: tipo de piso asignado a la sala (1–5)
     public int floorType;
 

@@ -30,7 +30,7 @@ public class DynamiteWeapon extends WeaponDef {
         }
 
         final float speed = 120f; // px/s
-        final int damage = (int) (60 + level * 18 * player.damageMultiplier);
+        // final int damage = (int) (60 + level * 18 * player.damageMultiplier);
         final float life = 4f;
 
         // spawn a simple slow projectile that moves toward target position and explodes

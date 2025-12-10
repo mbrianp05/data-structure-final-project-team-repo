@@ -188,6 +188,16 @@ public class GameWindow implements GameEventListener {
     }
 
     @Override
+    public void onGameOver() {
+        // mostrar panel de game over
+        SwingUtilities.invokeLater(() -> {
+            if (isPaused)
+                hidePauseOverlay();
+            showGameOverPanel();
+        });
+    }
+
+    @Override
     public void onExitToMenu() {
         SwingUtilities.invokeLater(this::cleanupAndReturnToMenu);
     }
@@ -206,6 +216,39 @@ public class GameWindow implements GameEventListener {
         c.add(vp, BorderLayout.CENTER);
         c.revalidate();
         c.repaint();
+    }
+
+    private void showGameOverPanel() {
+        // detener loop del game.GamePanel
+        invokeIfExists(gamePanel, "stopLoop");
+
+        Container c = frame.getContentPane();
+        c.removeAll();
+
+        GameOverPanel gop = new GameOverPanel(
+                () -> { // onRestart
+                    restartGame();
+                },
+                () -> { // onExit
+                    cleanupAndReturnToMenu();
+                });
+
+        c.add(gop, BorderLayout.CENTER);
+        c.revalidate();
+        c.repaint();
+    }
+
+    private void restartGame() {
+        // cerrar ventana actual
+        if (frame != null) {
+            frame.dispose();
+        }
+
+        // crear nueva ventana de juego
+        SwingUtilities.invokeLater(() -> {
+            GameWindow newGame = new GameWindow();
+            newGame.showGameWindow();
+        });
     }
 
     // utilitario: invoca un método sin argumentos por reflexión si existe

@@ -59,7 +59,7 @@ public class GameController {
                 resolvedStart = SimpleMapBuilder.pickRandomLeaf(map);
             } else {
                 TreeNode<MineRoom> root = map != null ? map.getRoot() : null;
-                if (root instanceof BinaryTreeNode && root.equals(resolvedStart)) {
+                if (root instanceof BinaryTreeNode && ((BinaryTreeNode<MineRoom>) root).equals(resolvedStart)) {
                     BinaryTreeNode<MineRoom> leaf = SimpleMapBuilder.pickRandomLeaf(map);
                     if (leaf != null)
                         resolvedStart = leaf;
@@ -94,6 +94,13 @@ public class GameController {
         System.out.println("¡Has alcanzado la salida! Victoria.");
         if (eventListener != null) {
             SwingUtilities.invokeLater(() -> eventListener.onWin());
+        }
+    }
+
+    private void notifyGameOver() {
+        System.out.println("Game Over - El jugador ha sido derrotado.");
+        if (eventListener != null) {
+            SwingUtilities.invokeLater(() -> eventListener.onGameOver());
         }
     }
 
@@ -152,6 +159,12 @@ public class GameController {
 
         // actualizar jugador (disparos)
         player.update(dt, enemies, this);
+
+        // check if player is dead
+        if (!player.alive) {
+            notifyGameOver();
+            return;
+        }
 
         // recolección de cristales y llaves
         collectCrystals(room);
@@ -394,7 +407,14 @@ public class GameController {
         BinaryTreeNode<MineRoom> root = (BinaryTreeNode<MineRoom>) map.getRoot();
         if (!root.equals(node))
             return false;
-        // check for boss alive in this node
+
+        // Si es la raíz y ya se spawneó el boss alguna vez, no permitir más spawns
+        MineRoom rootRoom = root.getInfo();
+        if (rootRoom != null && rootRoom.bossSpawned) {
+            return true; // bloquear spawns adicionales
+        }
+
+        // Si no se ha marcado bossSpawned, verificar si hay un boss vivo actualmente
         List<Enemy> list = enemyManager.getEnemiesAt(node);
         for (Enemy e : list) {
             if (e instanceof BossEnemy && e.isAlive())
@@ -532,7 +552,7 @@ public class GameController {
         for (Door d : destRoom.doors) {
             if (d == null)
                 continue;
-            if (d.destino != null && d.destino.equals(origenNode)) {
+            if (d.destino != null && origenNode != null && d.destino.equals(origenNode)) {
                 mirror = d;
                 break;
             }
@@ -628,11 +648,12 @@ public class GameController {
                     break;
                 }
             }
-            if (!bossExists) {
+            if (!bossExists && !r.bossSpawned) {
                 float sx = r.width / 2f;
                 float sy = r.height / 2f;
                 BossEnemy boss = new BossEnemy(node, sx, sy, 2000, 14f, 10);
                 enemyManager.addEnemyAt(node, boss);
+                r.bossSpawned = true; // marcar que el boss fue spawneado
                 System.out.println("Jefe final ha aparecido en la raíz.");
             }
             return;
@@ -818,7 +839,8 @@ public class GameController {
             return 0;
         int c = 0;
         for (Effect ef : effects) {
-            if (ef instanceof OrbittingOrb o) {
+            if (ef instanceof OrbittingOrb) {
+                OrbittingOrb o = (OrbittingOrb) ef;
                 if (!o.isExpired() && o.ownerPlayer == p)
                     c++;
             }

@@ -63,17 +63,8 @@ public class SimpleMapBuilder {
             rootRoom.doors.add(win);
         }
 
-        // colocar una única llave inicial en una sala aleatoria que no sea la raíz
-        BinaryTreeNode<MineRoom> keyNode = pickRandomNonRootNode(map);
-        if (keyNode != null) {
-            MineRoom kr = keyNode.getInfo();
-            java.util.Random rnd = new java.util.Random();
-            int margin = 60;
-            float kx = margin + rnd.nextFloat() * Math.max(1, kr.width - margin * 2);
-            float ky = margin + rnd.nextFloat() * Math.max(1, kr.height - margin * 2);
-            Key k = new Key(kx, ky, "llave dorada");
-            kr.keys.add(k);
-        }
+        // La llave dorada ya NO se coloca al inicio del juego
+        // Se spawneará cuando el jugador derrote al jefe final
         return map;
     }
 
