@@ -31,7 +31,7 @@ public class Player {
     public boolean alive = true;
 
     // Hurt / invulnerabilidad
-    private final float hurtCooldown = 0.8f; // segundos de invulnerabilidad después de recibir daño
+    private final float hurtCooldown = 0.7f; // segundos de invulnerabilidad después de recibir daño
     private float hurtTimer = 0f;
 
     // Knockback residual (aplicado por enemigos / proyectiles)
