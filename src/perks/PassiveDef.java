@@ -12,6 +12,5 @@ public abstract class PassiveDef {
         this.id = id; this.name = name; this.description = description;
     }
 
-    // aplicar n stacks de la pasiva al jugador (modifica atributos del jugador)
     public abstract void applyTo(Player player, int stacks);
 }

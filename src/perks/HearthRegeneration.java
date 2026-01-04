@@ -5,7 +5,7 @@ import entities.Player;
 
 public class HearthRegeneration extends PassiveDef {
     public HearthRegeneration() {
-        super("hearth_regen", "Regeneración del Hogar", "+1 HP/s por nivel");
+        super("hearth_regen", "Regeneración", "+1 HP/s por nivel");
     }
     @Override
     public void applyTo(Player player, int stacks) {

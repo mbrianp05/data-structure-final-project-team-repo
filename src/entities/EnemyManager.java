@@ -10,39 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-
-/**
- * Gestiona enemigos por nodo. Mantiene listas por BinaryTreeNode.
- */
-
-/**
- * entities.EnemyManager sin HashMap: usa BinaryTree<EnemyListBinding> para mapear BinaryTreeNode<map.MineRoom> -> List<entities.Enemy>.
- *
- * EnemyListBinding almacena la referencia al nodo de la sala y la lista de enemigos allí presentes.
- * El árbol se recorre con PreorderIterator para buscar/insertar bindings.
- *
- * API pública:
- *  - void addEnemyAt(BinaryTreeNode<map.MineRoom> node, entities.Enemy e)
- *  - void removeEnemy(entities.Enemy e)
- *  - List<entities.Enemy> getEnemiesAt(BinaryTreeNode<map.MineRoom> node)
- *  - boolean isCleared(BinaryTreeNode<map.MineRoom> node)
- *  - void spawnHordeAt(BinaryTreeNode<map.MineRoom> node, int amount, float spawnDistance)
- *  - void removeAllAt(BinaryTreeNode<map.MineRoom> node)
- *  - List<entities.Enemy> allEnemies()
- *
- * Nota: las búsquedas en este diseño son O(n) en el número de bindings. Si el número de salas con enemigos crece,
- * se puede añadir un índice (otro árbol o lista) para acelerar las búsquedas.
- */
-
-/**
- * entities.EnemyManager sin HashMap y sin llamar a entities.Enemy.setNode.
- * - Usa BinaryTree<EnemyListBinding> para mapear BinaryTreeNode<map.MineRoom> -> List<entities.Enemy>.
- * - No asume que entities.Enemy guarda su roomNode; cuando necesita saber la sala de un entities.Enemy,
- *   busca linealmente en los bindings (O(B)) y elimina la instancia.
- *
- * Si prefieres mejor rendimiento al eliminar enemigos (evitar búsqueda lineal por binding),
- * considera añadir a entities.Enemy un método getId() y mantener un índice adicional aquí (otra estructura).
- */
 public class EnemyManager {
     public static class EnemyListBinding {
         public BinaryTreeNode<MineRoom> roomNode;
@@ -57,28 +24,34 @@ public class EnemyManager {
     private final Random rnd = new Random();
 
     public EnemyManager(BinaryTree<MineRoom> map) {
-        // no guardamos map, usamos sólo nodos que nos pasen
     }
 
-    // ---------- helpers ----------
     private EnemyListBinding findBinding(BinaryTreeNode<MineRoom> node) {
-        if (node == null || bindingsTree.getRoot() == null) return null;
+        if (node == null || bindingsTree.getRoot() == null) {
+            return null;
+        }
         PreorderIterator<EnemyListBinding> it = bindingsTree.preOrderIterator();
         while (it.hasNext()) {
             BinaryTreeNode<EnemyListBinding> bnode = it.nextNode();
             EnemyListBinding b = bnode.getInfo();
-            if (b != null && b.roomNode != null && b.roomNode.equals(node)) return b;
+            if (b != null && b.roomNode != null && b.roomNode.equals(node)) {
+                return b;
+            }
         }
         return null;
     }
 
     private BinaryTreeNode<EnemyListBinding> findBindingNode(BinaryTreeNode<MineRoom> node) {
-        if (node == null || bindingsTree.getRoot() == null) return null;
+        if (node == null || bindingsTree.getRoot() == null) {
+            return null;
+        }
         PreorderIterator<EnemyListBinding> it = bindingsTree.preOrderIterator();
         while (it.hasNext()) {
             BinaryTreeNode<EnemyListBinding> bnode = it.nextNode();
             EnemyListBinding b = bnode.getInfo();
-            if (b != null && b.roomNode != null && b.roomNode.equals(node)) return bnode;
+            if (b != null && b.roomNode != null && b.roomNode.equals(node)) {
+                return bnode;
+            }
         }
         return null;
     }
@@ -88,18 +61,21 @@ public class EnemyManager {
         BinaryTreeNode<EnemyListBinding> newNode = new BinaryTreeNode<>(b);
         if (bindingsTree.getRoot() == null) {
             bindingsTree.setRoot(newNode);
-        } else {
+        }
+        else {
             BinaryTreeNode<EnemyListBinding> cursor = (BinaryTreeNode<EnemyListBinding>) bindingsTree.getRoot();
-            while (cursor.getRight() != null) cursor = cursor.getRight();
+            while (cursor.getRight() != null) {
+                cursor = cursor.getRight();
+            }
             cursor.setRight(newNode);
         }
         return newNode;
     }
 
-    // ---------- API pública ----------
-
     public void addEnemyAt(BinaryTreeNode<MineRoom> node, Enemy e) {
-        if (node == null || e == null) return;
+        if (node == null || e == null) {
+            return;
+        }
         EnemyListBinding b = findBinding(node);
         if (b == null) {
             BinaryTreeNode<EnemyListBinding> bn = createBindingNode(node);
@@ -108,13 +84,13 @@ public class EnemyManager {
         b.enemies.add(e);
     }
 
-    /**
-     * removeEnemy: busca el binding que contiene la instancia del enemigo y la elimina.
-     * Esto evita depender de que entities.Enemy guarde su sala.
-     */
     public void removeEnemy(Enemy e) {
-        if (e == null) return;
-        if (bindingsTree.getRoot() == null) return;
+        if (e == null) {
+            return;
+        }
+        if (bindingsTree.getRoot() == null) {
+            return;
+        }
         PreorderIterator<EnemyListBinding> it = bindingsTree.preOrderIterator();
         BinaryTreeNode<EnemyListBinding> targetBindingNode = null;
         EnemyListBinding targetBinding = null;
@@ -135,39 +111,59 @@ public class EnemyManager {
         }
     }
 
-    /**
-     * getEnemiesAt: devuelve copia defensiva de la lista de enemigos en la sala indicada.
-     */
     public List<Enemy> getEnemiesAt(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return Collections.emptyList();
+        if (node == null) {
+            return Collections.emptyList();
+        }
         EnemyListBinding b = findBinding(node);
-        if (b == null) return Collections.emptyList();
+        if (b == null) {
+            return Collections.emptyList();
+        }
         return new ArrayList<>(b.enemies);
     }
 
     public boolean isCleared(BinaryTreeNode<MineRoom> node) {
         EnemyListBinding b = findBinding(node);
-        if (b == null) return true;
-        for (Enemy e : b.enemies) if (e != null && e.isAlive()) return false;
+        if (b == null) {
+            return true;
+        }
+        for (Enemy e : b.enemies) {
+            if (e != null && e.isAlive()) {
+                return false;
+            }
+        }
         return true;
     }
 
     public void removeAllAt(BinaryTreeNode<MineRoom> node) {
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         EnemyListBinding b = findBinding(node);
-        if (b == null) return;
+        if (b == null) {
+            return;
+        }
         for (Enemy e : new ArrayList<>(b.enemies)) {
-            try { e.damage(Integer.MAX_VALUE, null); } catch (Exception ex) {}
+            try {
+                e.damage(Integer.MAX_VALUE, null);
+            } catch (Exception ex) {
+            }
         }
         b.enemies.clear();
         BinaryTreeNode<EnemyListBinding> bn = findBindingNode(node);
-        if (bn != null) bindingsTree.deleteNode(bn);
+        if (bn != null) {
+            bindingsTree.deleteNode(bn);
+        }
     }
 
     public void spawnHordeAt(BinaryTreeNode<MineRoom> node, int amount, float spawnDistance) {
-        if (node == null || amount <= 0) return;
+        if (node == null || amount <= 0) {
+            return;
+        }
         MineRoom r = node.getInfo();
-        if (r == null) return;
+        if (r == null) {
+            return;
+        }
 
         float cx = r.width / 2f;
         float cy = r.height / 2f;
@@ -177,8 +173,8 @@ public class EnemyManager {
         for (int i = 0; i < amount; i++) {
             double ang = rnd.nextDouble() * Math.PI * 2.0;
             double rad = dist * (0.8 + rnd.nextDouble() * 0.4);
-            float sx = cx + (float)Math.cos(ang) * (float)rad;
-            float sy = cy + (float)Math.sin(ang) * (float)rad;
+            float sx = cx + (float) Math.cos(ang) * (float) rad;
+            float sy = cy + (float) Math.sin(ang) * (float) rad;
 
             if (sx >= 0 && sx <= r.width && sy >= 0 && sy <= r.height) {
                 float dl = Math.abs(sx - 0);
@@ -187,10 +183,18 @@ public class EnemyManager {
                 float db = Math.abs(sy - r.height);
                 float min = Math.min(Math.min(dl, dr), Math.min(dt, db));
                 float pad = Math.max(40f, Math.min(120f, dist * 0.4f));
-                if (min == dl) sx = -pad;
-                else if (min == dr) sx = r.width + pad;
-                else if (min == dt) sy = -pad;
-                else sy = r.height + pad;
+                if (min == dl) {
+                    sx = -pad;
+                }
+                else if (min == dr) {
+                    sx = r.width + pad;
+                }
+                else if (min == dt) {
+                    sy = -pad;
+                }
+                else {
+                    sy = r.height + pad;
+                }
             }
 
             int level = 1 + rnd.nextInt(2);
@@ -200,17 +204,23 @@ public class EnemyManager {
             spawned.add(e);
         }
 
-        for (Enemy e : spawned) addEnemyAt(node, e);
+        for (Enemy e : spawned) {
+            addEnemyAt(node, e);
+        }
     }
 
     public List<Enemy> allEnemies() {
         List<Enemy> out = new ArrayList<>();
-        if (bindingsTree.getRoot() == null) return out;
+        if (bindingsTree.getRoot() == null) {
+            return out;
+        }
         PreorderIterator<EnemyListBinding> it = bindingsTree.preOrderIterator();
         while (it.hasNext()) {
             BinaryTreeNode<EnemyListBinding> n = it.nextNode();
             EnemyListBinding b = n.getInfo();
-            if (b != null && !b.enemies.isEmpty()) out.addAll(b.enemies);
+            if (b != null && !b.enemies.isEmpty()) {
+                out.addAll(b.enemies);
+            }
         }
         return out;
     }

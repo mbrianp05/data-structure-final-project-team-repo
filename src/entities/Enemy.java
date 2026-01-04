@@ -23,7 +23,6 @@ public class Enemy {
     public final int contactDamage;
     protected float knockbackResistance;
 
-    // --- Animación ---
     private boolean facingLeft = true;
     private int animTick = 0;
 
@@ -34,27 +33,47 @@ public class Enemy {
         this.level = Math.max(1, level);
         this.maxHp = Math.max(1, baseHp + (this.level - 1) * 12);
         this.hp = maxHp;
-        this.speed = baseSpeed +20 + (this.level - 1) * 6f;
+        this.speed = baseSpeed + 20 + (this.level - 1) * 6f;
         this.contactDamage = 6 + (this.level - 1) * 4;
         this.knockbackResistance = Math.min(0.9f, 0.2f + 0.15f * (this.level - 1));
         this.id = NEXT_ID++;
     }
 
-    // --- Getters ---
-    public BinaryTreeNode<MineRoom> getNode() { return node; }
-    public int getHp() { return hp; }
-    public int getMaxHp() { return maxHp; }
-    public int getId() { return id; }
-    public boolean isAlive() { return alive && hp > 0; }
-    public float getX() { return x; }
-    public float getY() { return y; }
-    public int getLevel() { return level; }
-    public boolean isFacingLeft() { return facingLeft; }
-    public int getAnimTick() { return animTick; }
+    public BinaryTreeNode<MineRoom> getNode() {
+        return node;
+    }
+    public int getHp() {
+        return hp;
+    }
+    public int getMaxHp() {
+        return maxHp;
+    }
+    public int getId() {
+        return id;
+    }
+    public boolean isAlive() {
+        return alive && hp > 0;
+    }
+    public float getX() {
+        return x;
+    }
+    public float getY() {
+        return y;
+    }
+    public int getLevel() {
+        return level;
+    }
+    public boolean isFacingLeft() {
+        return facingLeft;
+    }
+    public int getAnimTick() {
+        return animTick;
+    }
 
-    // --- Lógica de daño ---
     public void damage(int d, GameController controller) {
-        if (!isAlive()) return;
+        if (!isAlive()) {
+            return;
+        }
         hp -= d;
         if (hp <= 0) {
             alive = false;
@@ -76,14 +95,20 @@ public class Enemy {
         controller.onEnemyKilled(this);
     }
 
-    // --- Física ---
     public void applyKnockback(float impulseX, float impulseY) {
         vx += impulseX * (1f - knockbackResistance);
         vy += impulseY * (1f - knockbackResistance);
     }
 
-    public void applyVelocity(float ax, float ay) { vx += ax; vy += ay; }
-    public void translate(float dx, float dy) { x += dx; y += dy; }
+    public void applyVelocity(float ax, float ay) {
+        vx += ax;
+        vy += ay;
+    }
+
+    public void translate(float dx, float dy) {
+        x += dx;
+        y += dy;
+    }
 
     public void update(float dt, Player player, MineRoom room) {
         if (!isAlive()) {
@@ -93,20 +118,28 @@ public class Enemy {
             vy *= Math.max(0f, 1f - 6f * dt);
             return;
         }
-        if (room == null) return;
+        if (room == null) {
+            return;
+        }
 
         float dx = player.x - x;
         float dy = player.y - y;
-        float dist2 = dx*dx + dy*dy;
+        float dist2 = dx * dx + dy * dy;
         if (dist2 > 0.0001f) {
-            float dist = (float)Math.sqrt(dist2);
+            float dist = (float) Math.sqrt(dist2);
             float nx = dx / dist;
             float ny = dy / dist;
             x += (nx * speed + vx) * dt;
             y += (ny * speed + vy) * dt;
 
-            facingLeft = (nx < 0);
-        } else {
+            if (nx < 0) {
+                facingLeft = true;
+            }
+            else {
+                facingLeft = false;
+            }
+        }
+        else {
             x += vx * dt;
             y += vy * dt;
         }
@@ -122,31 +155,55 @@ public class Enemy {
         float dx = p.x - x;
         float dy = p.y - y;
         float r = 14f;
-        return dx*dx + dy*dy <= r*r;
+        boolean resultado;
+        if (dx * dx + dy * dy <= r * r) {
+            resultado = true;
+        }
+        else {
+            resultado = false;
+        }
+        return resultado;
     }
 
-    // --- Helpers ---
     protected void clampIfNearRoom(MineRoom r) {
         float half = 8f;
-        if (x < half) x = half;
-        if (x > r.width - half) x = r.width - half;
-        if (y < half) y = half;
-        if (y > r.height - half) y = r.height - half;
+        if (x < half) {
+            x = half;
+        }
+        if (x > r.width - half) {
+            x = r.width - half;
+        }
+        if (y < half) {
+            y = half;
+        }
+        if (y > r.height - half) {
+            y = r.height - half;
+        }
     }
 
     private float clampX(MineRoom r, float vx) {
         float half = 8f;
-        if (vx < half) return half;
-        if (vx > r.width - half) return r.width - half;
+        if (vx < half) {
+            return half;
+        }
+        if (vx > r.width - half) {
+            return r.width - half;
+        }
         return vx;
     }
 
     private float clampY(MineRoom r, float vy) {
         float half = 8f;
-        if (vy < half) return half;
-        if (vy > r.height - half) return r.height - half;
+        if (vy < half) {
+            return half;
+        }
+        if (vy > r.height - half) {
+            return r.height - half;
+        }
         return vy;
     }
 
-    public void setHp(int hp) { this.hp = hp; }
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }

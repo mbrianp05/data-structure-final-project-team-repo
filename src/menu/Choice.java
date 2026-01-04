@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class Choice implements Serializable {
     public enum Kind { WEAPON, PASSIVE }
     public final Kind kind;
-    public final String id;       // weaponId o passiveId
-    public final String name;     // nombre para UI (en español)
+    public final String id;
+    public final String name;
     public final String description;
 
     public Choice(Kind kind, String id, String name, String description) {

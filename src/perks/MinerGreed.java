@@ -5,7 +5,7 @@ import entities.Player;
 
 public class MinerGreed extends PassiveDef {
     public MinerGreed() {
-        super("codicia_minera", "Codicia Minera", "+10% XP de cristales por pila");
+        super("codicia_minera", "Codicia", "+10% XP de monedas por nivel");
     }
     @Override
     public void applyTo(Player player, int stacks) {

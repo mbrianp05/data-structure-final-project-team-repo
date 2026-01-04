@@ -6,17 +6,8 @@ import Tree.BinaryTreeNode;
 
 import java.awt.Rectangle;
 
-/**
- * Puerta dentro de una sala que lleva a otra sala (otro nodo).
- * area: rectángulo en coords locales de la sala origen que activa la transición.
- * destino: BinaryTreeNode<map.MineRoom> al que va la puerta.
- * spawnX, spawnY: coordenadas en la sala destino donde aparecerá el jugador.
- */
+//Puerta dentro de una sala que lleva a otra sala (otro nodo).
 
-/**
- * Puerta dentro de una sala que lleva a otra sala (otro nodo) o representa la
- * salida (isWin).
- */
 public class Door {
     public final Rectangle area;
     public final BinaryTreeNode<MineRoom> destino;
@@ -27,7 +18,7 @@ public class Door {
     public String label = "";
 
     // nuevo campo para diferenciar puertas normales
-    public int tipo = 0; // 0 = genérica, 1..5 = sprites p1..p5
+    public int tipo = 0;
 
     public Door(Rectangle area, BinaryTreeNode<MineRoom> destino, int spawnX, int spawnY) {
         this.area = area;
@@ -35,11 +26,16 @@ public class Door {
         this.spawnX = spawnX;
         this.spawnY = spawnY;
         this.isWin = false;
-        this.label = destino != null && destino.getInfo() != null ? String.valueOf(destino.getInfo().id) : "";
+        if (destino != null && destino.getInfo() != null) {
+            this.label = String.valueOf(destino.getInfo().id);
+        }
+        else {
+            this.label = "";
+        }
         this.tipo = new Random().nextInt(5) + 1; // asigna sprite aleatorio p1..p5
     }
 
-    // constructor para puerta de victoria (sin destino)
+    // constructor para puerta de victoria
     public Door(Rectangle area, boolean isWin, String label) {
         this.area = area;
         this.destino = null;
@@ -47,8 +43,13 @@ public class Door {
         this.spawnY = -1;
         this.locked = false;
         this.isWin = isWin;
-        this.label = label != null ? label : "EXIT";
-        this.tipo = 0; // las finales no usan sprite
+        if (label != null) {
+            this.label = label;
+        }
+        else {
+            this.label = "EXIT";
+        }
+        this.tipo = 0;
     }
 
     // método auxiliar

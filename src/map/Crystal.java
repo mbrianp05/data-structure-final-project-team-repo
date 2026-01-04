@@ -1,8 +1,7 @@
 package map;
 
-/**
- * Recompensa dejada por enemigos al morir.
- */
+//Recompensa dejada por enemigos al morir.
+
 public class Crystal {
     public float x, y;
     public int value;

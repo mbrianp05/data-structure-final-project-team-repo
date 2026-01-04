@@ -1,60 +1,99 @@
 package menu;
 
+import utils.ResourceManager;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 
 public class MainMenuPanel {
     private JFrame frame;
 
     public void showMenu() {
-        frame = new JFrame("Mine Room - Menú");
+        ResourceManager.init();
+
+        frame = new JFrame("Forest Survivors - Menú");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1024, 768); // resolución actualizada
         frame.setLocationRelativeTo(null);
 
-        JPanel main = new JPanel(new BorderLayout());
-        main.setBackground(Color.DARK_GRAY);
+        // Panel principal con fondo dibujado
+        JPanel main = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                BufferedImage fondo = ResourceManager.fondo1;
+                if (fondo != null) {
+                    g.drawImage(fondo, 0, 0, getWidth(), getHeight(), null);
+                } else {
+                    g.setColor(Color.DARK_GRAY);
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
+            }
+        };
+        main.setLayout(new BorderLayout());
 
-        JLabel title = new JLabel("Mine Room", SwingConstants.CENTER);
-        title.setFont(new Font("SansSerif", Font.BOLD, 48));
-        title.setForeground(Color.WHITE);
-        title.setBorder(BorderFactory.createEmptyBorder(24, 12, 12, 12));
-        main.add(title, BorderLayout.NORTH);
-
+        // Panel central con botones
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-        center.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        center.setBorder(BorderFactory.createEmptyBorder(420, 40, 40, 40)); // margen superior
 
-        JButton start = new JButton("Iniciar");
-        start.setAlignmentX(Component.CENTER_ALIGNMENT);
-        start.setMaximumSize(new Dimension(220, 40));
-        start.addActionListener((ActionEvent e) -> {
+        JButton start = createImageButton(ResourceManager.iniciar, ResourceManager.iniciar1, () -> {
             frame.dispose();
             GameWindow gw = new GameWindow();
             gw.showGameWindow();
         });
 
-        JButton exit = new JButton("Salir");
-        exit.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exit.setMaximumSize(new Dimension(220, 40));
-        exit.addActionListener((ActionEvent e) -> System.exit(0));
+        JButton exit = createImageButton(ResourceManager.salir, ResourceManager.salir1, () -> {
+            System.exit(0);
+        });
 
         center.add(Box.createVerticalGlue());
+        // espacio extra solo antes del botón Iniciar
+        center.add(Box.createVerticalStrut(30));
         center.add(start);
-        center.add(Box.createVerticalStrut(14));
+        center.add(Box.createVerticalStrut(20));
         center.add(exit);
         center.add(Box.createVerticalGlue());
 
         main.add(center, BorderLayout.CENTER);
 
-        JLabel footer = new JLabel("Presiona para jugar", SwingConstants.CENTER);
-        footer.setForeground(Color.LIGHT_GRAY);
-        footer.setBorder(BorderFactory.createEmptyBorder(12, 12, 24, 12));
-        main.add(footer, BorderLayout.SOUTH);
-
         frame.setContentPane(main);
         frame.setVisible(true);
+    }
+
+    private JButton createImageButton(BufferedImage normalImg, BufferedImage hoverImg, Runnable action) {
+        if (normalImg == null || hoverImg == null) {
+            System.err.println("Error: imagen del botón no cargada correctamente en ResourceManager");
+            JButton fallback = new JButton("Botón");
+            fallback.addActionListener(e -> action.run());
+            return fallback;
+        }
+
+        ImageIcon normalIcon = new ImageIcon(normalImg);
+        ImageIcon hoverIcon = new ImageIcon(hoverImg);
+
+        JButton button = new JButton(normalIcon);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        button.addActionListener(e -> action.run());
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setIcon(hoverIcon);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setIcon(normalIcon);
+            }
+        });
+
+        return button;
     }
 }
