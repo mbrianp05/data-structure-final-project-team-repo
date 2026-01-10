@@ -35,7 +35,7 @@ public class Player {
         if (Math.abs(dx) < 1e-4f && Math.abs(dy) < 1e-4f) {
             return;
         }
-        float len = (float)Math.sqrt(dx*dx + dy*dy);
+        float len = (float) Math.sqrt(dx * dx + dy * dy);
         if (len > 1e-4f) {
             this.facingX = dx / len;
             this.facingY = dy / len;
@@ -65,6 +65,7 @@ public class Player {
     public static class Binding {
         public String key;
         public int value;
+
         public Binding(String k, int v) {
             this.key = k;
             this.value = v;
@@ -88,9 +89,11 @@ public class Player {
     public int getAnimTick() {
         return animTick;
     }
+
     public boolean isFacingLeft() {
         return facingLeft;
     }
+
     public boolean isFacingRight() {
         return facingRight;
     }
@@ -128,13 +131,11 @@ public class Player {
         Binding existing = getBinding(tree, key);
         if (existing != null) {
             existing.value = value;
-        }
-        else {
+        } else {
             BinaryTreeNode<Binding> node = new BinaryTreeNode<>(new Binding(key, value));
             if (tree.getRoot() == null) {
                 tree.setRoot(node);
-            }
-            else {
+            } else {
                 BinaryTreeNode<Binding> cursor = (BinaryTreeNode<Binding>) tree.getRoot();
                 while (cursor.getRight() != null) {
                     cursor = cursor.getRight();
@@ -157,8 +158,7 @@ public class Player {
         Binding b = getBinding(tree, key);
         if (b != null) {
             b.value += delta;
-        }
-        else {
+        } else {
             putBinding(tree, key, delta);
         }
     }
@@ -201,7 +201,7 @@ public class Player {
     private int calcXpForLevel(int lvl) {
         double base = 80.0;
         double curve = 1.35;
-        int calculated = (int)Math.round(base * Math.pow(lvl, curve));
+        int calculated = (int) Math.round(base * Math.pow(lvl, curve));
         return Math.max(20, calculated);
     }
 
@@ -214,8 +214,7 @@ public class Player {
                 if (getBinding(weaponTimersTree, c.id) == null) {
                     putBinding(weaponTimersTree, c.id, 0);
                 }
-            }
-            else if (c.kind == Choice.Kind.PASSIVE) {
+            } else if (c.kind == Choice.Kind.PASSIVE) {
                 incBinding(passiveStacksTree, c.id, 1);
                 PassiveDef p = pool.getPassive(c.id);
                 if (p != null) {
@@ -305,7 +304,7 @@ public class Player {
                 float timer = getWeaponTimerSeconds(wid);
                 if (timer <= 0f) {
                     float baseCd = def.baseCooldown * attackCooldownMultiplier;
-                    float levelFactor = (float)Math.pow(0.95, wlvl - 1);
+                    float levelFactor = (float) Math.pow(0.95, wlvl - 1);
                     float effectiveCd = Math.max(0.02f, baseCd * levelFactor);
 
                     def.fire(this, wlvl, enemies, controller);
@@ -324,16 +323,23 @@ public class Player {
         return result;
     }
 
+    // El tiempo total acumulado en cada actualizacion
+    private float accdt = 0;
+    private int secondCounter = 0;
+
     public void update(float dt, List<Enemy> enemies, GameController controller) {
+        accdt += dt;
+
         if (alive) {
             if (hurtTimer > 0f) {
                 hurtTimer = Math.max(0f, hurtTimer - dt);
             }
 
-            if (hp < maxHp && hpRegenPerSec > 0f) {
-                float heal = hpRegenPerSec * dt;
-                int healAmount = Math.round(heal);
-                int newHp = hp + healAmount;
+            boolean differ = Math.floor(accdt) != Math.floor(secondCounter);
+
+            System.out.println(differ);
+            if (hp < maxHp && hpRegenPerSec > 0f && differ) {
+                int newHp = hp + (int) Math.floor(hpRegenPerSec);
                 hp = Math.min(maxHp, newHp);
             }
 
@@ -348,11 +354,13 @@ public class Player {
 
             animTick++;
         }
+
+        secondCounter = (int) Math.floor((double) accdt);
     }
 
     public Rectangle getBounds() {
-        int xPos = (int)(x - w/2);
-        int yPos = (int)(y - h/2);
+        int xPos = (int) (x - w / 2);
+        int yPos = (int) (y - h / 2);
         return new Rectangle(xPos, yPos, w, h);
     }
 
