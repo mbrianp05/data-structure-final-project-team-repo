@@ -337,7 +337,6 @@ public class Player {
 
             boolean differ = Math.floor(accdt) != Math.floor(secondCounter);
 
-            System.out.println(differ);
             if (hp < maxHp && hpRegenPerSec > 0f && differ) {
                 int newHp = hp + (int) Math.floor(hpRegenPerSec);
                 hp = Math.min(maxHp, newHp);
