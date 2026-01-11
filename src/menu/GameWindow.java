@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Random;
 
 import Tree.BinaryTree;
 import Tree.BinaryTreeNode;
@@ -23,7 +24,10 @@ public class GameWindow implements GameEventListener {
     private boolean isPaused = false;
 
     public void showGameWindow() {
-        BinaryTree<MineRoom> map = SimpleMapBuilder.buildProceduralBinaryMap(3, 800, 600);
+        Random rng = new Random();
+        int randomHeight = rng.nextInt(3, 6);
+
+        BinaryTree<MineRoom> map = SimpleMapBuilder.buildProceduralBinaryMap(randomHeight, 800, 600);
         BinaryTreeNode<MineRoom> start = SimpleMapBuilder.pickRandomLeaf(map);
         if (start == null) {
             Tree.TreeNode<MineRoom> root = map.getRoot();
@@ -68,8 +72,7 @@ public class GameWindow implements GameEventListener {
     private void togglePause() {
         if (!isPaused) {
             showPauseOverlay();
-        }
-        else {
+        } else {
             hidePauseOverlay();
         }
     }
@@ -136,7 +139,6 @@ public class GameWindow implements GameEventListener {
             gamePanel.requestFocusInWindow();
             frame.requestFocusInWindow();
         });
-
 
     }
 
