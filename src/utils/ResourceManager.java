@@ -154,8 +154,8 @@ public class ResourceManager {
         menuPrincipal1 = Loader.CargadorImagenes("/Assets/menuPrincipal1.png");
         getMenuPrincipal2 = Loader.CargadorImagenes("/Assets/menuPrincipal2.png");
 
-        em1 = Loader.CargadorImagenes("/Assets/em1.png");
-        em2 = Loader.CargadorImagenes("/Assets/em2.png");
-        em3 = Loader.CargadorImagenes("/Assets/em3.png");
+        em1 = Loader.CargadorImagenes("/Assets/em1.jpg");
+        em2 = Loader.CargadorImagenes("/Assets/em2.jpg");
+        em3 = Loader.CargadorImagenes("/Assets/em3.jpg");
     }
 }
