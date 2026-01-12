@@ -19,17 +19,15 @@ import java.util.List;
 
 import static utils.ResourceManager.*;
 
-
-  //panel principal del juego.
-  //Ejecuta el loop (Swing Timer) y llama a game.GameController.update(dt,...)
-  //Dibuja escena básica, barra de XP y modal de nivel
-  //Ajusta constantes (WIDTH, HEIGHT, FPS)
+//panel principal del juego.
+//Ejecuta el loop (Swing Timer) y llama a game.GameController.update(dt,...)
+//Dibuja escena básica, barra de XP y modal de nivel
+//Ajusta constantes (WIDTH, HEIGHT, FPS)
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
     public static final int WIDTH = 890;
     public static final int HEIGHT = 570;
     private static final int FPS = 60;
-
 
     private final Timer timer;
     private final GameController controller;
@@ -155,13 +153,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         float dt = Math.max(1f / 120f, (now - lastTimeNs) / 1_000_000_000f);
         lastTimeNs = now;
 
-
-
         if (!paused) {
             if (!controller.isLevelUpModalOpen()) {
                 applyPlayerInput(dt);
-            }
-            else {
+            } else {
 
             }
             controller.update(dt, null);
@@ -203,22 +198,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         int w = getWidth();
         int h = getHeight();
 
-        //  Dibujar fondo base (color oscuro)
+        // Dibujar fondo base (color oscuro)
         g.setColor(new Color(24, 30, 20));
         g.fillRect(0, 0, w, h);
 
         // Dibujar pared como background
 
-            int tile = 64;
-            int screenW = getWidth();
-            int screenH = getHeight();
+        int tile = 64;
+        int screenW = getWidth();
+        int screenH = getHeight();
 
-            // Dibujar el asset wall repetido
-            for (int y = 0; y < screenH; y += tile) {
-                for (int x = 0; x < screenW; x += tile) {
-                    g.drawImage(wall, x, y, tile, tile, null);
-                }
+        // Dibujar el asset wall repetido
+        for (int y = 0; y < screenH; y += tile) {
+            for (int x = 0; x < screenW; x += tile) {
+                g.drawImage(wall, x, y, tile, tile, null);
             }
+        }
 
         // Dibujar room background + doors
         drawRoomBackground(g);
@@ -229,7 +224,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // Dibujar player
         drawPlayer(g);
 
-        //Dibujar crystals y keys
+        // Dibujar crystals y keys
         drawCrystals(g);
         drawKeys(g);
 
@@ -262,7 +257,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         g.translate(ox, oy);
 
-        //Seleccionar sprite de piso según tipo definido en la sala
+        // Seleccionar sprite de piso según tipo definido en la sala
         BufferedImage chosenFloor = switch (r.floorType) {
             case 1 -> floor;
             default -> floor;
@@ -279,8 +274,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                     g.drawImage(chosenFloor, x, y, x + w, y + h, 0, 0, w, h, null);
                 }
             }
-        }
-        else {
+        } else {
             g.setColor(new Color(50, 40, 34));
             g.fillRect(0, 0, roomW, roomH);
         }
@@ -292,8 +286,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
             if (d.isWin) {
                 sprite = finaldoor;
-            }
-            else {
+            } else {
                 sprite = switch (d.tipo) {
                     case 1 -> p1;
                     default -> p1;
@@ -302,8 +295,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
             if (sprite != null) {
                 g.drawImage(sprite, a.x, a.y, a.width, 70, null);
-            }
-            else {
+            } else {
                 // fallback visual si no hay sprite
                 g.setColor(d.isWin ? new Color(80, 30, 30) : new Color(120, 90, 70));
                 g.fillRect(a.x, a.y, a.width, a.height);
@@ -312,7 +304,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             }
         }
 
-        //Borde de la sala
+        // Borde de la sala
         g.setColor(new Color(59, 54, 50));
         g.drawRect(0, 0, roomW - 1, roomH - 1);
 
@@ -353,9 +345,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                     case 4 -> ResourceManager.slime5;
                     default -> ResourceManager.slime3;
                 };
-
-            }
-            else if (en.level == 2) {
+            } else if (en.level == 2) {
                 int frame = (en.getAnimTick() / 15) % 4;
                 sprite = switch (frame) {
                     case 0 -> ResourceManager.gob1;
@@ -363,9 +353,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                     case 2 -> ResourceManager.gob3;
                     default -> ResourceManager.gob1;
                 };
-            }
-            else if (en.level == 3) {
-                //Esqueleto: animación cíclica de 4 frames
+            } else if (en.level == 3) {
+                // Esqueleto: animación cíclica de 4 frames
                 int frame = (en.getAnimTick() / 15) % 4;
                 sprite = switch (frame) {
                     case 0 -> ResourceManager.esq1;
@@ -373,8 +362,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                     case 2 -> ResourceManager.esq3;
                     default -> ResourceManager.esq1;
                 };
-            }
-            else {
+            } else {
                 int frame = (en.getAnimTick() / 15) % 3;
                 sprite = switch (frame) {
                     case 0 -> ResourceManager.boss1;
@@ -391,7 +379,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 g.drawImage(sprite, dx, dy, drawW, drawH, null);
             }
 
-            //Barra de vida encima del enemigo
+            // Barra de vida encima del enemigo
             int bw = 30, bh = 4;
             int barX = (int) (ex - bw / 2);
             int barY = (int) (ey - 20);
@@ -438,8 +426,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                     case 2 -> ResourceManager.devil3I;
                     default -> ResourceManager.devil1I;
                 };
-            }
-            else { // mirando a la derecha
+            } else { // mirando a la derecha
                 sprite = switch (frame) {
                     case 0 -> ResourceManager.devil1D;
                     case 1 -> ResourceManager.devil2D;
@@ -455,8 +442,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 int dy = (int) (p.y - drawH / 2f);
                 g.drawImage(sprite, dx, dy, drawW, drawH, null);
             }
-        }
-        else {
+        } else {
             g.setColor(new Color(200, 180, 120));
             g.fillRect((int) (p.x - p.w / 2), (int) (p.y - p.h / 2), p.w, p.h);
         }
@@ -556,13 +542,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             // Seleccionar imagen según el id
             BufferedImage sprite = null;
             switch (c.id) {
-                case "orbe_carbon"   -> sprite = ResourceManager.power3;
-                case "pico"          -> sprite = ResourceManager.power4;
-                case "dinamita"      -> sprite = ResourceManager.power2;
-                case "farol_magico"  -> sprite = ResourceManager.power1;
-                case "temple_forja"  -> sprite = ResourceManager.power5;
-                case "codicia_minera"-> sprite = ResourceManager.power6;
-                case "hearth_regen"  -> sprite = ResourceManager.power7;
+                case "orbe_carbon" -> sprite = ResourceManager.power3;
+                case "pico" -> sprite = ResourceManager.power4;
+                case "dinamita" -> sprite = ResourceManager.power2;
+                case "farol_magico" -> sprite = ResourceManager.power1;
+                case "temple_forja" -> sprite = ResourceManager.power5;
+                case "codicia_minera" -> sprite = ResourceManager.power6;
+                case "hearth_regen" -> sprite = ResourceManager.power7;
                 case "salud_dwarven" -> sprite = ResourceManager.power8;
             }
 
@@ -589,9 +575,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             }
         }
     }
-
-
-
 
     // input listeners
     @Override
@@ -737,8 +720,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 int dx = sx - drawW / 2;
                 int dy = sy - drawH / 2;
                 g.drawImage(sprite, dx, dy, drawW, drawH, null);
-            }
-            else {
+            } else {
                 // fallback: rectángulo dorado
                 g.setColor(new Color(220, 200, 80));
                 g.fillRect(sx - 8, sy - 6, 16, 12);
@@ -753,8 +735,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
     // Pausa / Resume / resetear input
 
-
-    //  Pone todas las flags de teclado a false para evitar que queden atascadas
+    // Pone todas las flags de teclado a false para evitar que queden atascadas
 
     public void resetInputState() {
         try {
@@ -798,7 +779,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // levantar bandera interna
         paused = false;
 
-        //reiniciar timer para que el loop del panel vuelva a tener control
+        // reiniciar timer para que el loop del panel vuelva a tener control
         try {
             if (timer != null && !timer.isRunning())
                 timer.start();
@@ -809,7 +790,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // reset de flags de entrada para evitar "stuck keys"
         resetInputState();
 
-        // notificar al controlador que puede aceptar updates externos (defensa en profundidad)
+        // notificar al controlador que puede aceptar updates externos (defensa en
+        // profundidad)
         try {
             controller.setExternallyPaused(false);
         } catch (Exception ex) {
@@ -831,7 +813,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         SwingUtilities.invokeLater(() -> {
 
-            int[] keys = new int[]{
+            int[] keys = new int[] {
                     KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D,
                     KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT
             };
@@ -850,7 +832,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         });
 
-        //logging final
+        // logging final
 
     }
 

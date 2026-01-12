@@ -38,6 +38,10 @@ public class ResourceManager {
     public static BufferedImage em2;
     public static BufferedImage em3;
 
+    // Ojo
+    public static BufferedImage eye1;
+    public static BufferedImage eye2;
+
     // cristales
     public static BufferedImage c1;
     public static BufferedImage c2;
@@ -157,5 +161,8 @@ public class ResourceManager {
         em1 = Loader.CargadorImagenes("/Assets/em1.jpg");
         em2 = Loader.CargadorImagenes("/Assets/em2.jpg");
         em3 = Loader.CargadorImagenes("/Assets/em3.jpg");
+
+        eye1 = Loader.CargadorImagenes("/Assets/eye1.jpg");
+        eye2 = Loader.CargadorImagenes("/Assets/eye2.jpg");
     }
 }
